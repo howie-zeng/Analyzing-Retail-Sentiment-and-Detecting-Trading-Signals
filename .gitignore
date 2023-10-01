@@ -1,0 +1,8 @@
+*.log
+
+# build/ directory and its contents
+/build/
+
+config.ini
+
+*.jpg
