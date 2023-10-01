@@ -23,7 +23,8 @@ The digital transformation of trading platforms has emboldened retail traders, m
 
 ### Data Collection
 
-- Use web scraping tools to extract comments and posts from sites like [WallStreetBets] (https://www.reddit.com/r/wallstreetbets/search/?q=flair%3A%22Daily%20Discussion%22&restrict_sr=1&sort=new) and Twitter.
+- Use web scraping tools to extract comments and posts from sites like WallStreetBets (Reddit) and Twitter.
+[WallStreetBets] (https://www.reddit.com/r/wallstreetbets/search/?q=flair%3A%22Daily%20Discussion%22&restrict_sr=1&sort=new) 
 
 ### Data Organization using Hash Tables
 
