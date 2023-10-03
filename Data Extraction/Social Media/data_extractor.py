@@ -15,7 +15,7 @@ class SocialMediaDataExtractor:
         # Initialize Twitter API client
         auth = tweepy.OAuthHandler(twitter_credentials['api_key'], twitter_credentials['api_secret_key'])
         auth.set_access_token(twitter_credentials['access_token'], twitter_credentials['access_token_secret'])
-        self.twitter = tweepy.API(auth)
+        self.api = tweepy.API(auth)
     
     def fetch_reddit_data(self, subreddit_name, num_posts):
         subreddit = self.reddit.subreddit(subreddit_name)
@@ -24,11 +24,11 @@ class SocialMediaDataExtractor:
             posts.append([post.title, post.score, post.id, post.subreddit, post.url, post.num_comments, post.selftext, post.created])
         posts = pd.DataFrame(posts, columns=['title', 'score', 'id', 'subreddit', 'url', 'num_comments', 'body', 'created'])
         return posts
-    
+
     def fetch_twitter_data(self, hashtag, num_tweets):
         tweets = []
-        for tweet in tweepy.Cursor(self.twitter.search, q=hashtag, lang="en").items(num_tweets):
-            tweets.append([tweet.created_at, tweet.id, tweet.text])
+        for tweet in tweepy.Cursor(self.api.search_tweets, q=hashtag, lang="en", tweet_mode='extended').items(num_tweets):
+            tweets.append([tweet.created_at, tweet.id, tweet.full_text])
         tweets = pd.DataFrame(tweets, columns=['created_at', 'tweet_id', 'text'])
         return tweets
     
