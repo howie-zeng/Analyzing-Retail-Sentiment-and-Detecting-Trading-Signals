@@ -1,4 +1,8 @@
 ## Updates/Log
+[Updates/Log](#updateslog)
+   - [10/02/2023](#date-10022023)
+   - [MM/DD/YYYY](#date-mmddyyyy)
+   - [Future Updates](#future-updates)
 
 ### [Date: 10/02/2023]
 #### Progress
