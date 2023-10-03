@@ -1,0 +1,12 @@
+pandas
+numpy
+beautifulsoup4
+requests
+nltk
+scikit-learn
+tensorflow
+keras
+matplotlib
+seaborn
+tweepy
+praw
