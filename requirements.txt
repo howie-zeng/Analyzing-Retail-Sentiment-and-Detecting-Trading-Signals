@@ -10,3 +10,4 @@ matplotlib
 seaborn
 tweepy
 praw
+alpha_vantage

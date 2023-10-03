@@ -36,10 +36,6 @@ class SocialMediaDataExtractor:
         # Logic to fetch data from Facebook
         pass
     
-    def fetch_youtube_data(self, channel_id, num_videos):
-        # Logic to fetch data from YouTube
-        pass
-    
     def store_data(self, data, filename):
         data.to_csv(filename, index=False)
     
@@ -51,9 +47,3 @@ class SocialMediaDataExtractor:
         # Logic to visualize analysis results
         pass
     
-# Example usage:
-# smde = SocialMediaDataExtractor()
-# reddit_data = smde.fetch_reddit_data('wallstreetbets', 100)
-# smde.store_data(reddit_data, 'reddit_data.csv')
-# analysis_results = smde.analyze_data(reddit_data)
-# smde.visualize_data(analysis_results)
