@@ -3,7 +3,7 @@
 # build/ directory and its contents
 /build/
 
-/Sentiment Analysis/*.Data
+Sentiment Analysis/*.Data
 
 config.ini
 
