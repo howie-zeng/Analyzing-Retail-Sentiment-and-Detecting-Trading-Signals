@@ -3,6 +3,9 @@
 # build/ directory and its contents
 /build/
 
+/Sentiment Analysis/*.Data
+
 config.ini
 
 *.jpg
+Sentiment Analysis/data/training.1600000.processed.noemoticon.csv
