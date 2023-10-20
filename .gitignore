@@ -11,8 +11,7 @@ config.ini
 Sentiment\ Analysis/*.data
 
 Sentiment Analysis/data/training.1600000.processed.noemoticon.csv
-Sentiment Analysis/model/rnn_bs128_epoch1.pt
-Sentiment Analysis/model/rnn_bs128_epoch2.pt
-Sentiment Analysis/model/rnn_bs128_epoch3.pt
+Sentiment Analysis/model/*
+
 *.pt
 Sentiment Analysis/fasttext_model.bin
