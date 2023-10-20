@@ -15,3 +15,4 @@ Sentiment Analysis/model/*
 
 *.pt
 Sentiment Analysis/fasttext_model.bin
+*.csv
