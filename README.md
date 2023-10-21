@@ -5,15 +5,6 @@
    - [MM/DD/YYYY](#date-mmddyyyy)
    - [Future Updates](#future-updates)
 
-### [Date: 10/02/2023]
-#### Progress
-- Successfully extracted stock data from Yahoo Finance, focusing on popular meme stocks like GME, AMC, and BB.
-- Initiated exploratory data analysis (EDA) to identify general trends and patterns within the extracted stock data, such as price fluctuations and trading volumes during specific time frames.
-
-#### Challenges
-- Encountered API rate limits while extracting data, which hindered the efficiency of the data retrieval process.
-- Realized that searching and utilizing available datasets might be a more efficient approach compared to real-time API data extraction due to the aforementioned rate limits.
-
 ### [Date: 10/20/2023]
 #### Progress
 - Successfully implemented the initial version of the RNN model for sentiment analysis, achieving an accuracy of 80% for test data.
@@ -33,3 +24,14 @@
 - Develop a strategy for cleaning and preprocessing the social media data, ensuring it is in a usable format for sentiment analysis.
 - Develop a strategy to predict stock movement using stock data.
 - Add market sentiment to the model predicting stock movement.
+
+### [Date: 10/02/2023]
+#### Progress
+- Successfully extracted stock data from Yahoo Finance, focusing on popular meme stocks like GME, AMC, and BB.
+- Initiated exploratory data analysis (EDA) to identify general trends and patterns within the extracted stock data, such as price fluctuations and trading volumes during specific time frames.
+
+#### Challenges
+- Encountered API rate limits while extracting data, which hindered the efficiency of the data retrieval process.
+- Realized that searching and utilizing available datasets might be a more efficient approach compared to real-time API data extraction due to the aforementioned rate limits.
+
+
