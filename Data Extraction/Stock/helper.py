@@ -2,6 +2,23 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
 import pandas as pd
+import numpy as np
+
+rsi_palette = {
+    'Extremely Oversold': 'red',
+    'Oversold': 'orange',
+    'Neutral': 'gray',
+    'Overbought': 'lightgreen',
+    'Extremely Overbought': 'green'
+}
+
+volume_palette = {
+    'Volume Dip': 'red',
+    'Minor Dip': 'orange',
+    'Neutral': 'gray',
+    'Minor Spike': 'lightgreen',
+    'Volume Spike': 'green'
+}
 
 def rsi_class(rsi, thresholds):
     """Classify RSI into categories based on given thresholds."""
@@ -9,9 +26,9 @@ def rsi_class(rsi, thresholds):
         return 'Extremely Oversold'
     elif rsi <= thresholds['oversold']:
         return 'Oversold'
-    elif rsi <= thresholds['overbought']:
+    elif rsi >= thresholds['overbought']:
         return 'Overbought'
-    elif rsi <= thresholds['extremely_overbought']:
+    elif rsi >= thresholds['extremely_overbought']:
         return 'Extremely Overbought'
     else:
         return 'Neutral'
@@ -41,7 +58,7 @@ def plot_rsi_category(data):
     sns.set(rc={'figure.figsize':(28,8)})
     sns.set_style("whitegrid")
     plt.title("Examining RSI on movement of Price")
-    ax = sns.scatterplot(x=data.index, y=data["Close"], hue=data["rsi_class"])
+    ax = sns.scatterplot(x=data.index, y=data["Close"], hue=data["rsi_class"], palette=rsi_palette)
     plt.show()
 
 
@@ -127,4 +144,69 @@ def plot_rsi_distribution(stock_data):
     plt.ylabel('RSI', fontsize=14)
     plt.xlabel('Stock', fontsize=14)
     plt.tight_layout()
+    plt.show()
+
+
+def calculate_moving_average(data, window_size):
+    return data.rolling(window=window_size).mean()
+
+
+def volume_class(row):
+    """Classify Volume into categories based on relative difference and thresholds."""
+    rel_diff = row['Relative_Difference']
+    thresholds = row[['volume_dip', 'minor_dip', 'minor_spike', 'volume_spike']]
+    
+    if rel_diff <= thresholds['volume_dip']:
+        return 'Volume Dip'
+    elif rel_diff <= thresholds['minor_dip']:
+        return 'Minor Dip'
+    elif rel_diff >= thresholds['volume_spike']:
+        return 'Volume Spike'
+    elif rel_diff >= thresholds['minor_spike']:
+        return 'Minor Spike'
+    else:
+        return 'Neutral'
+
+def compute_volume_class(data, window=10):
+    """Compute Volume class based on relative difference and add to dataframe."""
+    
+    # Compute the 10-day moving average for volume
+    data['MA_Volume'] = data['Volume'].rolling(window=window).mean()
+    
+    # Compute the relative difference
+    data['Relative_Difference'] = (data['Volume'] - data['MA_Volume']) / data['MA_Volume']
+    
+    # Define thresholds
+    thresholds = {
+        'volume_dip': data['Relative_Difference'].quantile(0.10),
+        'minor_dip': data['Relative_Difference'].quantile(0.30),
+        'minor_spike': data['Relative_Difference'].quantile(0.70),
+        'volume_spike': data['Relative_Difference'].quantile(0.90)
+    }
+    for key, value in thresholds.items():
+        data[key] = value
+    
+    # Compute the Volume class
+    data['volume_class'] = data.apply(volume_class, axis=1)
+    
+    return data
+
+def plot_volume_distribution(stock_data):
+    """Plot the distribution of relative difference given a dict of data."""
+    sns.set_style("whitegrid")
+    plt.figure(figsize=(28, 14))
+    for stock, data in stock_data.items():
+        sns.kdeplot(data['Relative_Difference'], label=stock, fill=True)  
+    plt.title('Relative Difference Distribution for All Stocks')
+    plt.xlabel('Relative Difference')
+    plt.ylabel('Density')
+    plt.legend(title='Stock')
+    plt.show()
+
+def plot_volume_category(data):
+    """Plot Volume categories against stock price."""
+    sns.set(rc={'figure.figsize':(28,8)})
+    sns.set_style("whitegrid")
+    plt.title("Examining Volume on movement of Price")
+    ax = sns.scatterplot(x=data.index, y=data["Close"], hue=data["volume_class"], palette=volume_palette)
     plt.show()

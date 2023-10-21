@@ -11,6 +11,7 @@
 - Collected additional data to enhance the training set.
 - Successfully implemented the stock preditction models, including linear regression, LSTM, ARIMA, and STL, though only linear regression has a good prediction accuracy.
 - Established the extractor to count and rank all the stock names from comments data, and seletect the top 50 names from the list.
+- Performed Volume, RSI, Moving Average analysis.
 
 #### Challenges
 - The model's performance on unseen data, specifically related to stock posts, is suboptimal with an accuracy of around 60%.
