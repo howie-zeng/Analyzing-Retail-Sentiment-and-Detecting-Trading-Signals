@@ -9,10 +9,14 @@
 #### Progress
 - Successfully implemented the initial version of the RNN model for sentiment analysis, achieving an accuracy of 80% for test data.
 - Collected additional data to enhance the training set.
+- Successfully implemented the stock preditction models, including linear regression, LSTM, ARIMA, and STL, though only linear regression has a good prediction accuracy.
+- Established the extractor to count and rank all the stock names from comments data, and seletect the top 50 names from the list.
 
 #### Challenges
 - The model's performance on unseen data, specifically related to stock posts, is suboptimal with an accuracy of around 60%.
 - Recognized that leveraging existing datasets might be a more efficient strategy than extracting data in real-time from APIs, especially considering the rate limits associated with the latter.
+- Predition models should be explored further to enhance the performance.
+- Stock name extractor only considers the stock name mentioned in the comments without detailed analysis on the sentiment and focus on the stock name.
 
 #### Next Steps
 - Plan to develop a mechanism to pinpoint the specific stock that a post refers to.
