@@ -210,3 +210,21 @@ def plot_volume_category(data):
     plt.title("Examining Volume on movement of Price")
     ax = sns.scatterplot(x=data.index, y=data["Close"], hue=data["volume_class"], palette=volume_palette)
     plt.show()
+
+
+def categorize_movement(return_val):
+    if -0.002 <= return_val <= 0.002:
+        return 'Stable'
+    elif 0.002 < return_val <= 0.01:
+        return 'Slight Uptrend'
+    elif -0.01 <= return_val < -0.002:
+        return 'Slight Downtrend'
+    elif 0.01 < return_val <= 0.02:
+        return 'Moderate Uptrend'
+    elif -0.02 <= return_val < -0.01:
+        return 'Moderate Downtrend'
+    elif return_val > 0.02:
+        return 'Strong Uptrend'
+    else:
+        return 'Strong Downtrend'
+
