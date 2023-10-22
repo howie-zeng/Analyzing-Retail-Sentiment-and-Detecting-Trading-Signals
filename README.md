@@ -12,11 +12,12 @@
 - Successfully implemented the stock preditction models, including linear regression, LSTM, ARIMA, and STL, though only linear regression has a good prediction accuracy.
 - Established the extractor to count and rank all the stock names from comments data, and seletect the top 50 names from the list.
 - Performed Volume, RSI, and Moving Average analysis.
-- Added requirement.txt file, 
-'''
-pip freeze > requirements.txt
-pip install -r requirements.txt
-'''
+-  Added a `requirements.txt` file for managing project dependencies. You can install the required packages using the following commands:
+
+  ```bash
+  pip freeze > requirements.txt
+  pip install -r requirements.txt
+  ```
 
 #### Challenges
 - The model's performance on unseen data, specifically related to stock posts, is suboptimal with an accuracy of around 60%.
