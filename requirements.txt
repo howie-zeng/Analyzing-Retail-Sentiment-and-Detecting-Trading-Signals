@@ -4,10 +4,12 @@ beautifulsoup4
 requests
 nltk
 scikit-learn
-tensorflow
 keras
 matplotlib
 seaborn
 tweepy
 praw
 alpha_vantage
+tqdm
+tensorflow
+torch
