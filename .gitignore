@@ -1,29 +1,4 @@
-# Ignore log files
-*.log
 
-# Ignore build directory and its contents
-/build/
-
-# Ignore config file
-config.ini
-
-# Ignore JPEG image files
-*.jpg
-
-# Ignore Sentiment Analysis data files
-Sentiment Analysis/*.data
-
-# Ignore specific Sentiment Analysis CSV file
-Sentiment Analysis/data/training.1600000.processed.noemoticon.csv
-
-# Ignore model files within Sentiment Analysis
-Sentiment Analysis/model/*
-
-# Ignore PyTorch model checkpoint files
-*.pt
-
-# Ignore specific fastText model file
-Sentiment Analysis/fasttext_model.bin
-
-# Ignore CSV files
 *.csv
+*.pt
+*.bin
