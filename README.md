@@ -18,6 +18,7 @@
   pip freeze > requirements.txt
   pip install -r requirements.txt
   ```
+- Python 3.9.18 is used. When opening .ipynb file using Jupyter notebook, make sure to change the kernel with this version of Python.
 
 #### Challenges
 - The model's performance on unseen data, specifically related to stock posts, is suboptimal with an accuracy of around 60%.
