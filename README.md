@@ -17,6 +17,7 @@
   ```bash
   pip freeze > requirements.txt
   pip install -r requirements.txt
+  ```
 
 #### Challenges
 - The model's performance on unseen data, specifically related to stock posts, is suboptimal with an accuracy of around 60%.
