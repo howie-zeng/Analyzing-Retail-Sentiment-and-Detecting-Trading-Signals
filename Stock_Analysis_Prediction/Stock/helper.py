@@ -4,6 +4,7 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 import glob
+from sklearn.metrics import mean_squared_error, accuracy_score, classification_report, confusion_matrix
 
 rsi_palette = {
     'Extremely Oversold': 'red',
@@ -242,3 +243,77 @@ def load_stock_data(stock, current_path):
     data = pd.read_csv(file_path, index_col='Date', parse_dates=True)
     
     return data
+
+def plot_predictions(df, predictions, window_size, stock):
+    plt.figure(figsize=(40, 20))
+    
+    # Extract necessary data
+    dates = df['Date'][window_size:].tolist()
+    actual_movements = df['movement_category'][window_size:].tolist()
+    close_prices = df['Close'][window_size:].tolist()
+    
+    # Determine correct and incorrect predictions
+    correct_dates = [dates[i] for i, (actual, pred) in enumerate(zip(actual_movements, predictions)) if actual == pred]
+    incorrect_dates = [dates[i] for i, (actual, pred) in enumerate(zip(actual_movements, predictions)) if actual != pred]
+    correct_prices = [close_prices[i] for i, (actual, pred) in enumerate(zip(actual_movements, predictions)) if actual == pred]
+    incorrect_prices = [close_prices[i] for i, (actual, pred) in enumerate(zip(actual_movements, predictions)) if actual != pred]
+    
+    # Plotting the actual close prices
+    plt.plot(dates, close_prices, label='Actual Close Price', color='blue', linewidth=2.5)
+    
+    # Plotting the points where predictions were correct
+    plt.scatter(correct_dates, correct_prices, color='green', label='Correct Prediction', s=50, alpha=0.7)
+    
+    # Plotting the points where predictions were incorrect
+    plt.scatter(incorrect_dates, incorrect_prices, color='red', label='Incorrect Prediction', s=150, marker='x', alpha=0.7)
+    
+    # Adjust x-axis to only show the first day of each month for clarity
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    plt.gca().xaxis.set_major_locator(mdates.MonthLocator(interval=1)) # Display first day of each month
+    
+    # Plot settings
+    plt.title(f'{stock} Stock Price with Movement Predictions', fontsize=24)
+    plt.xlabel('Date', fontsize=20)
+    plt.ylabel('Close Price', fontsize=20)
+    plt.xticks(rotation=45, fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+    plt.legend(fontsize=18, loc='upper left')
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_confusion_matrix(true_values, predictions, labels_order):
+    """
+    Plots a confusion matrix for the given true values and predictions using the specified labels order.
+    
+    Args:
+    - true_values (list): List of true labels.
+    - predictions (list): List of predicted labels.
+    - labels_order (list): List of label names in the desired order.
+    """
+    
+    cm = confusion_matrix(true_values, predictions, labels=labels_order)
+
+    # Plot the confusion matrix
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(cm, annot=True, fmt='g', cmap='Blues', 
+                xticklabels=labels_order, 
+                yticklabels=labels_order)
+    plt.xlabel('Predicted', fontsize=16)
+    plt.ylabel('True', fontsize=16)
+    plt.title('Confusion Matrix', fontsize=20)
+    plt.xticks(rotation=45, fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.tight_layout()
+    plt.show()
+    accuracy = accuracy_score(true_values, predictions)
+    print(f"Accuracy: {accuracy * 100:.2f}%")
+    print(classification_report(true_values, predictions))
+
+def post_process(df, predictions, window_size):
+    df["predicted_close"] = df["Close"]
+    df.loc[df.index[window_size:], "predicted_close"] = predictions
+    df["predicted_return"] = df['predicted_close'].pct_change().fillna(0)
+    df["predicted_movement_category"] = df['predicted_return'].apply(categorize_movement)
+    return df
