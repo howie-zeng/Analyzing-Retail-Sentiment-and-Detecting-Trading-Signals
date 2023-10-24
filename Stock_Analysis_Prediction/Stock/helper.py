@@ -1,9 +1,9 @@
+import glob
+import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
-import pandas as pd
-import numpy as np
-import glob
 from sklearn.metrics import mean_squared_error, accuracy_score, classification_report, confusion_matrix
 
 rsi_palette = {
@@ -21,6 +21,7 @@ volume_palette = {
     'Minor Spike': 'lightgreen',
     'Volume Spike': 'green'
 }
+
 
 def rsi_class(rsi, thresholds):
     """Classify RSI into categories based on given thresholds."""
