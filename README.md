@@ -2,8 +2,12 @@
 [Updates/Log](#updateslog)
    - [10/02/2023](#date-10022023)
    - [10/20/2023](#date-10202023)
-   - [MM/DD/YYYY](#date-mmddyyyy)
+   - [10/24/2023](#date-10242023)
    - [Future Updates](#future-updates)
+
+### [Date: 10/20/2023]
+#### Progress
+- Changed from XGBoost Classifier to Regressor, resulting in a 10x speed increase at the cost of a 10% performance drop (probably due to randomness).
 
 ### [Date: 10/20/2023]
 #### Progress
