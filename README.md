@@ -5,9 +5,12 @@
    - [10/24/2023](#date-10242023)
    - [Future Updates](#future-updates)
 
-### [Date: 10/20/2023]
+### [Date: 10/24/2023]
 #### Progress
 - Changed from XGBoost Classifier to Regressor, resulting in a 10x speed increase at the cost of a 10% performance drop (probably due to randomness).
+- 
+#### Challenges
+- predicting signal instead of movement might be an optimal approach
 
 ### [Date: 10/20/2023]
 #### Progress
