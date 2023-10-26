@@ -169,6 +169,24 @@ def volume_class(row):
         return 'Minor Spike'
     else:
         return 'Neutral'
+def calculate_mas(data, periods, column_name="Close"):
+    """
+    Calculate moving averages for specified periods.
+
+    Parameters:
+    - data: pandas DataFrame containing stock data.
+    - periods: list of integers specifying the moving average periods. Default is [5, 10, 20, 50, 200].
+    - column_name: name of the column in the DataFrame to compute the MAs for. Default is "Close".
+
+    Returns:
+    - pandas DataFrame with added MA columns.
+    """
+    
+    for period in periods:
+        ma_label = f"MA{period}"
+        data[ma_label] = data[column_name].rolling(window=period).mean()
+    
+    return data
 
 def compute_volume_class(data, window=10):
     """Compute Volume class based on relative difference and add to dataframe."""
