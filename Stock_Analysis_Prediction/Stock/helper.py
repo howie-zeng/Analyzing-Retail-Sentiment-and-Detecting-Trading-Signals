@@ -336,3 +336,7 @@ def post_process(df, predictions, window_size):
     df["predicted_return"] = df['predicted_close'].pct_change().fillna(0)
     df["predicted_movement_category"] = df['predicted_return'].apply(categorize_movement)
     return df
+
+def mean_absolute_percentage_error(y_true, y_pred): 
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
