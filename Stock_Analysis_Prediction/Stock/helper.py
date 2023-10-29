@@ -35,26 +35,6 @@ def rsi_class(rsi, thresholds):
         return 'Extremely Overbought'
     else:
         return 'Neutral'
-    
-def compute_rsi_class(data):
-    """Compute RSI class for the entire dataframe and add RSI thresholds."""
-    thresholds = {
-        'extremely_oversold': data['RSI'].quantile(0.05),
-        'oversold': data['RSI'].quantile(0.10),
-        'overbought': data['RSI'].quantile(0.90),
-        'extremely_overbought': data['RSI'].quantile(0.95)
-    }
-    
-    # Add thresholds to the dataframe
-    data['rsi_extremely_oversold_threshold'] = thresholds['extremely_oversold']
-    data['rsi_oversold_threshold'] = thresholds['oversold']
-    data['rsi_overbought_threshold'] = thresholds['overbought']
-    data['rsi_extremely_overbought_threshold'] = thresholds['extremely_overbought']
-    
-    # Compute the RSI class
-    data['rsi_class'] = data['RSI'].apply(lambda x: rsi_class(x, thresholds))
-    
-    return data
 
 def plot_rsi_category(data):
     """Plot RSI categories against stock price."""
@@ -169,48 +149,6 @@ def volume_class(row):
         return 'Minor Spike'
     else:
         return 'Neutral'
-def calculate_mas(data, periods, column_name="Close"):
-    """
-    Calculate moving averages for specified periods.
-
-    Parameters:
-    - data: pandas DataFrame containing stock data.
-    - periods: list of integers specifying the moving average periods. Default is [5, 10, 20, 50, 200].
-    - column_name: name of the column in the DataFrame to compute the MAs for. Default is "Close".
-
-    Returns:
-    - pandas DataFrame with added MA columns.
-    """
-    
-    for period in periods:
-        ma_label = f"MA{period}"
-        data[ma_label] = data[column_name].rolling(window=period).mean()
-    
-    return data
-
-def compute_volume_class(data, window=10):
-    """Compute Volume class based on relative difference and add to dataframe."""
-    
-    # Compute the 10-day moving average for volume
-    data['MA_Volume'] = data['Volume'].rolling(window=window).mean()
-    
-    # Compute the relative difference
-    data['Relative_Difference'] = (data['Volume'] - data['MA_Volume']) / data['MA_Volume']
-    
-    # Define thresholds
-    thresholds = {
-        'volume_dip': data['Relative_Difference'].quantile(0.10),
-        'minor_dip': data['Relative_Difference'].quantile(0.30),
-        'minor_spike': data['Relative_Difference'].quantile(0.70),
-        'volume_spike': data['Relative_Difference'].quantile(0.90)
-    }
-    for key, value in thresholds.items():
-        data[key] = value
-    
-    # Compute the Volume class
-    data['volume_class'] = data.apply(volume_class, axis=1)
-    
-    return data
 
 def plot_volume_distribution(stock_data):
     """Plot the distribution of relative difference given a dict of data."""
@@ -340,3 +278,134 @@ def post_process(df, predictions, window_size):
 def mean_absolute_percentage_error(y_true, y_pred): 
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+
+
+### Indicators
+def calculate_rsi(data, window=14):
+    # Missing RSI calculation
+    delta = data['Close'].diff()
+    gain = (delta.where(delta > 0, 0)).fillna(0)
+    loss = (-delta.where(delta < 0, 0)).fillna(0)
+    
+    avg_gain = gain.rolling(window=window, min_periods=1).mean()
+    avg_loss = loss.rolling(window=window, min_periods=1).mean()
+    
+    rs = avg_gain / avg_loss
+    rsi = 100 - (100 / (1 + rs))
+    return rsi
+
+def compute_rsi_class(data):
+    rsi = calculate_rsi(data)
+    conditions = [
+        (rsi >= 70),
+        (rsi <= 30),
+        (rsi.between(30, 70))
+    ]
+    choices = [1, -1, 0]
+    return pd.Series(pd.cut(rsi, bins=[0, 30, 70, 100], labels=[-1, 0, 1], right=True))
+
+
+def compute_volume_class(data, window=10):
+    """Compute Volume class based on relative difference and add to dataframe."""
+    
+    # Compute the 10-day moving average for volume
+    data['MA_Volume'] = data['Volume'].rolling(window=window).mean()
+    
+    # Compute the relative difference
+    data['Relative_Difference'] = (data['Volume'] - data['MA_Volume']) / data['MA_Volume']
+    
+    # Define thresholds
+    thresholds = {
+        'volume_dip': data['Relative_Difference'].quantile(0.10),
+        'minor_dip': data['Relative_Difference'].quantile(0.30),
+        'minor_spike': data['Relative_Difference'].quantile(0.70),
+        'volume_spike': data['Relative_Difference'].quantile(0.90)
+    }
+    for key, value in thresholds.items():
+        data[key] = value
+    
+    # Compute the Volume class
+    data['volume_class'] = data.apply(volume_class, axis=1)
+    
+    return data['volume_class']
+
+def calculate_mas(data, periods, column_name="Close"):
+    """
+    Calculate moving averages for specified periods.
+
+    Parameters:
+    - data: pandas DataFrame containing stock data.
+    - periods: list of integers specifying the moving average periods. Default is [5, 10, 20, 50, 200].
+    - column_name: name of the column in the DataFrame to compute the MAs for. Default is "Close".
+
+    Returns:
+    - pandas DataFrame with added MA columns.
+    """
+    
+    for period in periods:
+        ma_label = f"MA{period}"
+        data[ma_label] = data[column_name].rolling(window=period).mean()
+    
+    return data
+
+def calculate_wvad(data, period=14):
+    wvad_numerator = (data['Close'] - data['Low']) - (data['High'] - data['Close'])
+    wvad_denominator = data['High'] - data['Low']
+    wvad = wvad_numerator / wvad_denominator * data['Volume']
+    return wvad.rolling(window=period).sum()
+
+def calculate_macd(stock_data, short_window=12, long_window=26, signal_window=9):
+    short_ema = stock_data['Close'].ewm(span=short_window, adjust=False).mean()
+    long_ema = stock_data['Close'].ewm(span=long_window, adjust=False).mean()
+    macd_line = short_ema - long_ema
+    signal_line = macd_line.ewm(span=signal_window, adjust=False).mean()
+    return macd_line - signal_line, macd_line, signal_line
+
+
+def calculate_roc(stock_data, period=14):
+    """
+    Calculate the Rate of Change (ROC) for a given stock DataFrame.
+
+    Parameters:
+        stock_data (pd.DataFrame): DataFrame containing stock data with a column 'Close'.
+        period (int): The period for calculating ROC. Default is 14.
+
+    Returns:
+        pd.Series: Series containing ROC values for each day within the specified period.
+    """
+    # Calculate ROC
+    roc = stock_data['Close'].pct_change(periods=period) * 100
+
+    return roc
+
+def calculate_cci(data, period=20):
+    TP = (data['High'] + data['Low'] + data['Close']) / 3
+    SMA_TP = TP.rolling(window=period).mean()
+    MD = np.abs(TP - SMA_TP).rolling(window=period).mean()
+    CCI = (TP - SMA_TP) / (0.015 * MD)
+    return CCI
+
+def calculate_bollinger_bands(data, window=20, num_std_dev=2):
+    sma = data['Close'].rolling(window=window).mean()
+    std_dev = data['Close'].rolling(window=window).std()
+    upper_band = sma + (std_dev * num_std_dev)
+    lower_band = sma - (std_dev * num_std_dev)
+    return upper_band, lower_band, sma
+
+
+def calculate_smi(data, period=14, signal_period=3):
+    lowest_low = data['Close'].rolling(window=period).min()
+    highest_high = data['Close'].rolling(window=period).max()
+    SO = ((data['Close'] - lowest_low) / (highest_high - lowest_low)) * 100
+    EMA_SO = SO.ewm(span=signal_period, adjust=False).mean()
+    SMI = SO - EMA_SO
+    return SMI
+
+
+def calculate_atr(data, period=14):
+    high_low = data['High'] - data['Low']
+    high_prevclose = abs(data['High'] - data['Close'].shift(1))
+    low_prevclose = abs(data['Low'] - data['Close'].shift(1))
+    TR = pd.concat([high_low, high_prevclose, low_prevclose], axis=1).max(axis=1)
+    ATR = TR.ewm(span=period, adjust=False).mean()
+    return ATR
