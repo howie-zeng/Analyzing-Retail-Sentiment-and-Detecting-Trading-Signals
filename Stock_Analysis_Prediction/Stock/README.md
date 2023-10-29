@@ -11,6 +11,7 @@
 - Came up with a new evaluation metrics. The residual now seem random.
 - Added a lot more indicators into the XGBoost model; the mean absolute error in percentage has been reduced to its 1/3.
 - The model can now make decent detections for selling signals.
+
 #### Next Steps
 - Undertake more feature selection.
 - Incorporate more advanced indicators like Williams VIX Fix and RSI Bollinger Strategy.
