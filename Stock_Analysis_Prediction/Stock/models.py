@@ -37,11 +37,12 @@ class BaseModel(ABC):
 
 class XGBoostModel(BaseModel):
 
-    def __init__(self):
+    def __init__(self, loss_fn):
         super().__init__()
+        self.loss_fn = loss_fn 
 
     def train(self, X, y):
-        self.model = xgb.XGBRegressor(objective='reg:squarederror', n_jobs=-1)
+        self.model = xgb.XGBRegressor(objective=self.loss_fn, n_jobs=-1)
         self.model.fit(X, y)
 
         for i, col in enumerate(X.columns):
@@ -165,6 +166,8 @@ class StockPredictor:
         print(f'Mean Squared Error (MSE): {MSE}')
         MAPE = helper.mean_absolute_percentage_error(self.true_values, self.predictions)
         print(f'Mean Absolute Percentage Error (MAPE): {MAPE:.2f}%')
+        RMSE = np.sqrt(MSE)
+        print(f'Root Mean Squared Error (RMSE): {RMSE}')
 
     def plot_actual_vs_predicted(self, prediction_lag):
         # Define time indices for x-axis based on data length
@@ -227,13 +230,13 @@ class StockPredictor:
             buy_signals_count = sum(1 for p in past_predictions if p > buy_threshold)
             sell_signals_count = sum(1 for p in past_predictions if p < sell_threshold)
 
-            if buy_signals_count >= 2:
+            if buy_signals_count >= 3:
                 if funds > 0:
                     stocks_bought = funds // stock_price[i]
                     funds -= stocks_bought * stock_price[i]
                     stock_position += stocks_bought
                 buys[i] = stock_price[i]
-            elif sell_signals_count >= 2:
+            elif sell_signals_count >= 3:
                 if stock_position > 0:
                     funds += stock_position * stock_price[i]
                     stock_position = 0
