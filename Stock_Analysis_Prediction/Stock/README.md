@@ -5,11 +5,19 @@
    - [10/24/2023](#date-10242023)
    - [Future Updates](#future-updates)
 
-### [Date: 10/20/2023]
+### [Date: 10/24/2023] third to forth week
 #### Progress
 - Changed from XGBoost Classifier to Regressor, resulting in a 10x speed increase at the cost of a 10% performance drop (probably due to randomness).
+- Came up with a new evaluation metrics. The residual now seem random.
+- Added a lot more indicators into the XGBoost model; the mean absolute error in percentage has been reduced to its 1/3.
+- The model can now make decent detections for selling signals.
+#### Next Steps
+- Undertake more feature selection.
+- Incorporate more advanced indicators like Williams VIX Fix and RSI Bollinger Strategy.
+- Upon completion, experiment with other models such as LSM.
 
-### [Date: 10/20/2023]
+
+### [Date: 10/20/2023] second week
 #### Progress
 - Successfully implemented the initial version of the RNN model for sentiment analysis, achieving an accuracy of 80% for test data.
 - Collected additional data to enhance the training set.
@@ -40,7 +48,7 @@
 - Develop a strategy to predict stock movement using stock data.
 - Add market sentiment to the model predicting stock movement.
 
-### [Date: 10/02/2023]
+### [Date: 10/02/2023] first week
 #### Progress
 - Successfully extracted stock data from Yahoo Finance, focusing on popular meme stocks like GME, AMC, and BB.
 - Initiated exploratory data analysis (EDA) to identify general trends and patterns within the extracted stock data, such as price fluctuations and trading volumes during specific time frames.
