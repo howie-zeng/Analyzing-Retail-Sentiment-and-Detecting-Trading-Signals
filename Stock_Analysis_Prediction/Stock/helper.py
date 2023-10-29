@@ -4,7 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
+import ta
 from sklearn.metrics import mean_squared_error, accuracy_score, classification_report, confusion_matrix
+
 
 rsi_palette = {
     'Extremely Oversold': 'red',
@@ -409,3 +411,110 @@ def calculate_atr(data, period=14):
     TR = pd.concat([high_low, high_prevclose, low_prevclose], axis=1).max(axis=1)
     ATR = TR.ewm(span=period, adjust=False).mean()
     return ATR
+
+def cm_williams_vix_fix(close_prices, low_prices, pd_=22, bbl=20, mult=2.0, lb=50, ph=0.85, pl=1.01):
+    """
+    Compute the CM Williams Vix Fix values.
+
+    Parameters:
+    - close_prices: Series of close prices.
+    - low_prices: Series of low prices.
+    - pd_, bbl, mult, lb, ph, pl: Various parameters for calculation.
+
+    Returns:
+    - A DataFrame with 'wvf', 'upperBand', 'rangeHigh', and 'color' columns.
+    """
+    
+    # Calculate the highest close over the pd_ period
+    highest_close = close_prices.rolling(window=pd_).max()
+    
+    # Williams Vix Fix calculation
+    wvf = ((highest_close - low_prices) / highest_close) * 100
+    
+    # Calculate the midLine using a simple moving average
+    midLine = wvf.rolling(window=bbl).mean()
+    
+    # Calculate standard deviation over the bbl period
+    sDev = mult * wvf.rolling(window=bbl).std()
+    
+    # Calculate the range high value
+    rangeHigh = wvf.rolling(window=lb).max() * ph
+    
+    # Determine color based on conditions
+    color = [1 if w >= midLine.iloc[i] + sDev.iloc[i] or w >= rangeHigh.iloc[i] else 0 for i, w in enumerate(wvf)] # 1 for line and 0 for grey
+
+    return pd.DataFrame({'WVF': wvf, 'upperBand': midLine + sDev, 'rangeHigh': rangeHigh, 'WVF_color': color})
+
+
+def bollinger_rsi_strategy(close_prices: pd.Series) -> pd.DataFrame:
+    data = pd.DataFrame(close_prices, columns=['Close'])
+    
+    # Parameters
+    RSI_length = 6
+    RSI_overSold = 50
+    RSI_overBought = 50
+    BB_length = 200
+    BB_mult = 2
+
+    # Calculate RSI
+    data['RSI'] = ta.momentum.RSIIndicator(data['Close'], window=RSI_length).rsi()
+
+    # Calculate Bollinger Bands
+    bb = ta.volatility.BollingerBands(data['Close'], window=BB_length, window_dev=BB_mult)
+    data['BB_Upper'] = bb.bollinger_hband()
+    data['BB_Lower'] = bb.bollinger_lband()
+    # Buy and sell signals
+    data['Buy_Signal'] = (data['RSI'].shift(1) < RSI_overSold) & (data['RSI'] > RSI_overSold) & (data['Close'].shift(1) < data['BB_Lower']) & (data['Close'] > data['BB_Lower'])
+
+    data['Sell_Signal'] = (data['RSI'].shift(1) > RSI_overBought) & (data['RSI'] < RSI_overBought) & (data['Close'].shift(1) > data['BB_Upper']) & (data['Close'] < data['BB_Upper'])
+
+    return data[['Buy_Signal', 'Sell_Signal', 'BB_Upper', 'BB_Lower']]
+
+def on_balance_volume(data):
+    """
+    Calculate On-Balance Volume (OBV) and add it to the DataFrame.
+    """
+    obv = (np.sign(data['Close'].diff()) * data['Volume']).fillna(0).cumsum()
+    data['OBV'] = obv
+    return data
+
+def volume_price_trend(data):
+    """
+    Calculate Volume Price Trend (VPT) and add it to the DataFrame.
+    """
+    vpt = (data['Volume'] * (data['Close'].diff() / data['Close'])).cumsum()
+    data['VPT'] = vpt
+    return data
+
+def money_flow_index(data, period=14):
+    """
+    Calculate Money Flow Index (MFI) and add it to the DataFrame.
+    """
+    typical_price = (data[['High', 'Low', 'Close']].sum(axis=1)) / 3
+    money_flow = typical_price * data['Volume']
+    
+    pos_flow = pd.Series(np.where(typical_price > typical_price.shift(), money_flow, 0), index=data.index)
+    neg_flow = pd.Series(np.where(typical_price < typical_price.shift(), money_flow, 0), index=data.index)
+    
+    money_ratio = pos_flow.rolling(period).sum() / neg_flow.rolling(period).sum()
+    
+    data['MFI'] = 100 - (100 / (1 + money_ratio))
+    return data
+
+
+def accumulation_distribution(data):
+    """
+    Calculate Accumulation/Distribution Line (A/D) and add it to the DataFrame.
+    """
+    high_minus_low = data['High'] - data['Low']
+    close_minus_low = data['Close'] - data['Low']
+    high_minus_close = data['High'] - data['Close']
+
+    # Avoid division by zero by replacing zeros with NaNs
+    with np.errstate(divide='ignore', invalid='ignore'):
+        clv = (close_minus_low - high_minus_close) / high_minus_low
+        clv[np.isinf(clv)] = 0  # Handling cases where high is equal to low
+        clv.fillna(0, inplace=True)
+
+    data['AD'] = (clv * data['Volume']).cumsum()
+    return data
