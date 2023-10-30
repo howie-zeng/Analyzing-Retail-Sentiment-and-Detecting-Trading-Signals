@@ -1,52 +1,48 @@
 ## Updates/Log
-[Updates/Log](#updateslog)
-   - [10/02/2023](#date-10022023)
-   - [10/20/2023](#date-10202023)
-   - [10/24/2023](#date-10242023)
-   - [Future Updates](#future-updates)
+- [10/02/2023](#date-10022023)
+- [10/20/2023](#date-10202023)
+- [10/24/2023](#date-10242023)
+- [Future Updates](#future-updates)
 
-### [Date: 10/20/2023]
-#### Progress
-- Changed from XGBoost Classifier to Regressor, resulting in a 10x speed increase at the cost of a 10% performance drop (probably due to randomness).
+### Date: 10/24/2023
+#### Third to Fourth Week Progress
+- Transitioned from the XGBoost Classifier to the Regressor, achieving a 10x speed enhancement but with a minor 10% performance reduction.
+- Introduced new evaluation metrics; residuals now appear random.
+- Enriched the XGBoost model with numerous indicators, resulting in a two-thirds reduction in the mean absolute error percentage.
+- Improved model's capability in detecting selling signals.
+- Recorded an absolute mean error percentage of 1.87% over a decade and 1.74% over two years.
+- Incorporated advanced indicators like the Williams VIX Fix and the RSI Bollinger Strategy.
+- Conducted experiments on sectors such as SPY, QQQ, and DIA, as well as with stocks like TSLA and Amazon.
+- Implemented a Volume Indicator for tracking volume outbreaks.
 
-### [Date: 10/20/2023]
-#### Progress
-- Successfully implemented the initial version of the RNN model for sentiment analysis, achieving an accuracy of 80% for test data.
-- Collected additional data to enhance the training set.
-- Successfully implemented the stock preditction models, including linear regression, LSTM, ARIMA, and STL, though only linear regression has a good prediction accuracy.
-- Established the extractor to count and rank all the stock names from comments data, and seletect the top 50 names from the list.
-- Performed Volume, RSI, and Moving Average analysis.
-- Added a `requirements.txt` file for managing project dependencies. You can install the required packages using the following commands:
-  ```bash
-  pip freeze > requirements.txt
-  pip install -r requirements.txt
-  ```
-- Implemented the early version of a moving window time series model utilizing XGBoost.
+#### Upcoming Objectives
+- Prioritize enhanced feature selection.
+- Post enhancements, explore alternative models like LSM.
+- Address the colinearity issue.
 
-#### Challenges
-- The model's performance on unseen data, specifically related to stock posts, is suboptimal with an accuracy of around 60%.
-- Recognized that leveraging existing datasets might be a more efficient strategy than extracting data in real-time from APIs, especially considering the rate limits associated with the latter.
-- Predition models should be explored further to enhance the performance.
-- Stock name extractor only considers the stock name mentioned in the comments without detailed analysis on the sentiment and focus on the stock name.
+### Date: 10/20/2023
+#### Second Week Challenges
+- The model displayed mediocre performance on unseen data related to stock posts, achieving only around 60% accuracy.
+- Identified the potential advantage of using pre-existing datasets over real-time API data extraction, mainly due to rate limit restrictions of APIs.
+- Need to delve deeper into prediction models to optimize performance.
+- The current stock name extractor overlooks detailed sentiment analysis, focusing solely on the stock name mentioned in comments.
 
-#### Next Steps
-- Plan to develop a mechanism to pinpoint the specific stock that a post refers to.
-- Will need to implement a method to identify the stock a post is talking about.
+#### Upcoming Objectives
+- Initiate the development of a mechanism to accurately identify the specific stock referenced in a post.
+- Further enhancement is required for the method determining which stock a post is referring to.
 
-#### To-Dos
-- Conduct a thorough EDA on the extracted stock data, focusing on identifying potential correlations with expected social media sentiment trends.
-- Identify and acquire datasets containing social media posts and comments related to the meme stocks.
-- Develop a strategy for cleaning and preprocessing the social media data, ensuring it is in a usable format for sentiment analysis.
-- Develop a strategy to predict stock movement using stock data.
-- Add market sentiment to the model predicting stock movement.
+#### Tasks in Queue
+- Perform an in-depth EDA on the stock data, emphasizing the discovery of correlations with anticipated social media sentiment patterns.
+- Search and procure datasets containing social media posts and comments pertinent to meme stocks.
+- Formulate a robust methodology for cleaning and preprocessing the social media data, ensuring its viability for sentiment analysis.
+- Design a strategy for predicting stock movements using the accumulated stock data.
+- Integrate market sentiment into the stock movement prediction model.
 
-### [Date: 10/02/2023]
-#### Progress
-- Successfully extracted stock data from Yahoo Finance, focusing on popular meme stocks like GME, AMC, and BB.
-- Initiated exploratory data analysis (EDA) to identify general trends and patterns within the extracted stock data, such as price fluctuations and trading volumes during specific time frames.
+### Date: 10/02/2023
+#### First Week Progress
+- Successfully harvested stock data from Yahoo Finance, with a spotlight on renowned meme stocks like GME, AMC, and BB.
+- Embarked on an exploratory data analysis (EDA) journey to decipher overarching trends and patterns in the stock data, such as discernible price swings and distinct trading volume periods.
 
-#### Challenges
-- Encountered API rate limits while extracting data, which hindered the efficiency of the data retrieval process.
-- Realized that searching and utilizing available datasets might be a more efficient approach compared to real-time API data extraction due to the aforementioned rate limits.
-
-
+#### Encountered Issues
+- Faced constraints with API rate limits during data extraction, impeding the speed and efficiency of data acquisition.
+- Acknowledged the potential efficiency of sourcing and employing available datasets over real-time API data extraction, primarily due to the constraints mentioned above.
