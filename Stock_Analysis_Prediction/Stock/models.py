@@ -74,7 +74,7 @@ class StockPredictor:
                 ]] 
 
         # Merging other stocks, economic indicator
-        dataToAdd = ['^TNX', 'SPY', 'QQQ'] # 'QQQ', "SPY", "MSFT", "AMZN", "GOOG",'DIA'
+        dataToAdd = ['^TNX', 'SPY', 'QQQ', 'DIA'] # 'QQQ', "SPY", "MSFT", "AMZN", "GOOG",'DIA'
         for item in dataToAdd:
             df = df.merge(self.stock_data[item][['Date', 'Close']], on="Date", how='inner', suffixes=("", f'_{item}'))
 
@@ -168,6 +168,10 @@ class StockPredictor:
         print(f'Mean Absolute Percentage Error (MAPE): {MAPE:.2f}%')
         RMSE = np.sqrt(MSE)
         print(f'Root Mean Squared Error (RMSE): {RMSE}')
+
+        self.MSE = MSE
+        self.MAPE = MAPE
+        self.RMSE = RMSE
 
     def plot_actual_vs_predicted(self, prediction_lag):
         # Define time indices for x-axis based on data length
