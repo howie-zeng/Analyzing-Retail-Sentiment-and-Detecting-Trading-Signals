@@ -3,3 +3,8 @@
 *.pt
 *.bin
 *.exe
+
+finetuned_model
+FinBERT-FinVocab-Uncased
+data
+best_model
