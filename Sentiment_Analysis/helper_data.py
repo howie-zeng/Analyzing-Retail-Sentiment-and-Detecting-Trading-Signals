@@ -8,10 +8,9 @@ from nltk.corpus import stopwords
 import random
 
 from googletrans import Translator
-
 import concurrent.futures
-
 from transformers import pipeline
+from sklearn.utils import shuffle
 
 
 nltk.download('wordnet')
@@ -189,3 +188,16 @@ def undersample_data(dataset, n=1):
 
     return balanced_df
 
+
+def shuffle_dataframe(df):
+    """
+    Shuffle the rows of a DataFrame.
+
+    Args:
+    df (pd.DataFrame): The DataFrame to be shuffled.
+
+    Returns:
+    pd.DataFrame: A new DataFrame with shuffled rows.
+    """
+    shuffled_df = shuffle(df)
+    return shuffled_df
