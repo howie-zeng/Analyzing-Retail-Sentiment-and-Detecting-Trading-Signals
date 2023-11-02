@@ -18,7 +18,8 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, roc_auc_score, confusion_matrix, accuracy_score, f1_score
+from sklearn.metrics import classification_report, roc_auc_score, confusion_matrix, accuracy_score, f1_score, roc_curve, roc_auc_score
+
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
@@ -58,14 +59,13 @@ class SentimentClassifier(nn.Module):
         return x.squeeze()
     
 
-
 def train(train_loader, test_loader, embedding_matrix, batch_size, num_epochs=6, learning_rate=0.001, save_path="model/"):
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = SentimentClassifier(embedding_matrix).to(device)
-    criterion = nn.BCELoss()
+    criterion = nn.BCELoss()   # Binary Cross-Entropy Loss
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     
     if torch.cuda.device_count() > 1:
@@ -143,6 +143,22 @@ def evaluate_model(model, test_loader, y_test, embedding_matrix, original_texts,
     # ROC-AUC
     roc_auc = roc_auc_score(y_true, y_pred_probs)
     print(f"ROC-AUC: {roc_auc:.4f}")
+
+    # ROC Curve
+    fpr, tpr, thresholds = roc_curve(y_true, y_pred_probs)
+    roc_auc = roc_auc_score(y_true, y_pred_probs)
+
+    # Plot ROC Curve
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (AUC = {roc_auc:.2f})')
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver Operating Characteristic (ROC) Curve')
+    plt.legend(loc="lower right")
+    plt.show()
 
     # Confusion Matrix
     conf_matrix = confusion_matrix(y_true, y_pred)
