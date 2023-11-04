@@ -1,12 +1,10 @@
-
-# *.csv
+*.csv
 *.pt
 *.bin
 *.exe
 
 finetuned_model
 FinBERT-FinVocab-Uncased
-data
 best_model
 
 Sentiment_Analysis\__pycache__
