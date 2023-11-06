@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import xgboost as xgb
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, mean_squared_error, r2_score
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
@@ -53,13 +53,13 @@ class XGBoostModel(BaseModel):
 
 class StockPredictor:
 
-    def __init__(self, stock_data, model, stock='AAPL', fromDate="2015-01-01", toDate='2017-01-01', window_size=200, late=5):
+    def __init__(self, stock_data, model, stock='AAPL', fromDate="2015-01-01", toDate='2017-01-01', window_size=200, lag=5):
         self.stock_data = stock_data
         self.stock = stock
         self.fromDate = fromDate
         self.toDate = toDate
         self.window_size = window_size
-        self.late = late
+        self.lag = lag
         self.model = model
         self.prepare_data()
 
@@ -80,7 +80,7 @@ class StockPredictor:
 
         df.set_index('Date', inplace=True)
         df = df.loc[self.fromDate:self.toDate]
-        df[f'Close_{self.late}_days_later'] = df['Close'].shift(-self.late)
+        df[f'Close_{self.lag}_days_later'] = df['Close'].shift(-self.lag)
 
         # Uncomment if you want to introduce these features later
         # df['relative_volume'] = df['Volume'] / self.data['MA_Volume']
@@ -108,10 +108,10 @@ class StockPredictor:
 
         df.dropna(inplace=True)
 
-        toDrop = ['Open', 'High', 'Low', 'Close_{}_days_later'.format(self.late)]
+        toDrop = ['Open', 'High', 'Low', 'Close_{}_days_later'.format(self.lag)]
         self.df = df
         self.X = df.drop(toDrop, axis=1, errors='ignore')
-        self.y = df[f'Close_{self.late}_days_later']
+        self.y = df[f'Close_{self.lag}_days_later']
 
 
     def fit_predict(self):
@@ -168,6 +168,9 @@ class StockPredictor:
         print(f'Mean Absolute Percentage Error (MAPE): {MAPE:.2f}%')
         RMSE = np.sqrt(MSE)
         print(f'Root Mean Squared Error (RMSE): {RMSE}')
+        MAE = mean_absolute_error(self.true_values, self.predictions)
+        print(f'Mean Absolute Error (MAE): {MAE}')
+
 
         self.MSE = MSE
         self.MAPE = MAPE
