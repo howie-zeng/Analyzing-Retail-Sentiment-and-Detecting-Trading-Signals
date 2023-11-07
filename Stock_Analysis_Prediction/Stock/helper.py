@@ -281,6 +281,23 @@ def mean_absolute_percentage_error(y_true, y_pred):
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
+def calculate_returns(prices):
+    prices = np.array(prices)
+    returns = np.diff(prices) / prices[:-1] * 100
+    return returns
+
+def calculate_returns(prices):
+    prices = np.array(prices)
+    returns = np.diff(prices) / prices[:-1] * 100
+    return returns
+
+def calculate_return_difference(y_price, y_predicted_price):
+    actual_returns = calculate_returns(y_price)
+    predicted_returns = calculate_returns(y_predicted_price)
+    min_length = min(len(actual_returns), len(predicted_returns))
+    return_difference = actual_returns[:min_length] - predicted_returns[:min_length]
+    
+    return return_difference
 
 ### Indicators
 def calculate_rsi(data, window=14):

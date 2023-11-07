@@ -1,5 +1,12 @@
-
 *.csv
 *.pt
 *.bin
 *.exe
+
+finetuned_model
+FinBERT-FinVocab-Uncased
+best_model
+
+Sentiment_Analysis\__pycache__
+bert-base-uncased-finetuned-1
+distilbert-base-uncased-finetuned-1
