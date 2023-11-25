@@ -139,7 +139,6 @@ class StockPredictor:
     def fit_predict(self):
         predictions = []
         true_values = []
-        current_prices = []
 
         for start in tqdm(range(0, self.X.shape[0] - self.window_size), desc="Processing"):
             end = start + self.window_size
@@ -151,11 +150,9 @@ class StockPredictor:
             y_pred = self.model.predict(X_test)
             predictions.append(y_pred[0])
             true_values.append(y_test.iloc[0])
-            current_prices.append(self.df['Close'].values[start:end])
 
         self.predictions = predictions
-        self.true_values=true_values
-        self.current_prices=current_prices
+        self.true_values = true_values
     
     def plot_residuals(self):
         residuals = [(pred - true) for true, pred in zip(self.true_values, self.predictions)]
@@ -331,5 +328,3 @@ class StockPredictor:
         ax1.legend(loc='upper left')
         ax1.set_title("Stock Price with Buy/Sell Actions")
         plt.show()
-
-    def 
