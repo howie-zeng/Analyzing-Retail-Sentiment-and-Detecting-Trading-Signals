@@ -7,14 +7,7 @@ import seaborn as sns
 import ta
 from sklearn.metrics import mean_squared_error, accuracy_score, classification_report, confusion_matrix
 
-STOCKS = ["RIVN", "BB", "SOFI", "GME", "AMC", "PLTR", "TSLA", "AAPL", 'QQQ', "SPY", "DIA", "MSFT", "AMZN", "GOOG", '^IRX']
-START_DATE = "2009-01-01"
-END_DATE = "2023-01-01"
-MAs = [5, 10, 20, 50, 100, 200]
-PRICE_FEATURES_TO_CONVERT = ['MA5', 'MA10', 'MA20', 'MA50', 'MA100', 'MA200', 'BB_Upper', 'BB_Lower', 'Upper Band', 'SMA', 'Lower Band']
-VOLUME_FEATURES_TO_CONVERT = ['Volume']
-ORIGINAL_PRICE_FEATURES = ['Open', 'Close', 'High', 'Low', 'Adj Close']
-RANDOM_STATE = 2023
+
 rsi_palette = {
     'Extremely Oversold': 'red',
     'Oversold': 'orange',
