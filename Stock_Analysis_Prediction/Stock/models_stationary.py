@@ -16,6 +16,9 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestRegressor
 from tqdm import tqdm
 import helper 
+import torch
+import torch.nn as nn
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class BaseModel(ABC):

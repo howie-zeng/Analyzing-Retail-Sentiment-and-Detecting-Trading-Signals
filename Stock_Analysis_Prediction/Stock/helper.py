@@ -1,12 +1,24 @@
 import glob
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
 import ta
-from sklearn.metrics import mean_squared_error, accuracy_score, classification_report, confusion_matrix
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+from torch.optim.lr_scheduler import StepLR
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score, roc_auc_score,
+    mean_squared_error, classification_report, confusion_matrix
+)
 import pywt
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 STOCKS = ["RIVN", "BB", "SOFI", "GME", "AMC", "PLTR", "TSLA", "AAPL", 'QQQ', "SPY", "DIA", "MSFT", "AMZN", "GOOG", '^IRX']
 START_DATE = "2009-01-01"
@@ -571,3 +583,79 @@ def apply_stationary_wavelet_transform(data, wavelet='haar', level=1):
 def reconstruct_from_coeffs(coeffs, wavelet='haar'):
     reconstructed_data = pywt.waverec(coeffs, wavelet)
     return reconstructed_data
+
+def preprocess_stock_data(stock_data, STOCKS):
+    processed_data = {}
+    MAs = [5, 10, 20, 50, 100, 200]
+    for stock in STOCKS:
+        data = stock_data[stock].copy()
+        if len(data) % 2 != 0:
+            data = data[:-1]
+        data['Date'] = pd.to_datetime(data['Date'])
+        if stock != "^IRX":
+            data['RSI'] = compute_rsi(data['Close'])
+            data['rsi_class'] = compute_rsi_class(data)
+            data = calculate_mas(data, MAs, column_name="Close")
+            data['WVAD'] = calculate_wvad(data, period=14)
+            data['ROC'] = calculate_roc(data, period=14)
+            data['MACD'], data['macd_line'], data['signal_line'] = calculate_macd(data, short_window=12, long_window=26, signal_window=9)
+            data['CCI'] = calculate_cci(data, period=20)
+            data['Upper Band'], data['Lower Band'], data['SMA'] = calculate_bollinger_bands(data, window=20, num_std_dev=2)
+            data['SMI'] = calculate_smi(data, period=14, signal_period=3)
+            data['ATR'] = calculate_atr(data, period=14)
+            data[['WVF', 'upperBand', 'rangeHigh', 'WVF_color']] = cm_williams_vix_fix(data['Close'], data['Low'])
+            data[['Buy_Signal', 'Sell_Signal', 'BB_Upper', 'BB_Lower']] = bollinger_rsi_strategy(data['Close'])
+            data = on_balance_volume(data)
+            data = volume_price_trend(data)
+            data = money_flow_index(data)
+            data = accumulation_distribution(data)
+            data = data.dropna()
+        processed_data[stock] = data
+        print(f"Data fetched for {stock}")
+    return processed_data
+
+def create_sequences(input_data, target_data, sequence_length, prediction_length):
+    xs, ys = [], []
+    for i in range(len(input_data) - sequence_length - prediction_length + 1):
+        xs.append(input_data[i:(i + sequence_length)])
+        ys.append(target_data[(i + sequence_length):(i + sequence_length + prediction_length)])
+    return np.array(xs), np.array(ys)
+
+def prepare_data_and_model(df_stock, sequence_length, prediction_length, test_size=0.2):
+    if len(df_stock) % 2 != 0:  # must be even
+        df_stock = df_stock[:-1]
+    
+    df_stock_swt = apply_stationary_wavelet_transform(df_stock)
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    df_stock_swt = scaler.fit_transform(df_stock_swt)
+
+    close_prices_Y = df_stock['Close']
+    
+    X, y = create_sequences(df_stock_swt, close_prices_Y, sequence_length, prediction_length)
+    scaler_y = MinMaxScaler(feature_range=(0, 1))
+    y = scaler_y.fit_transform(y)
+    scaler_y = MinMaxScaler(feature_range=(0, 1))
+    
+    X_tensor = torch.tensor(X, dtype=torch.float32)
+    y_tensor = torch.tensor(y, dtype=torch.float32)
+    
+    train_size = int((1 - test_size) * len(X_tensor))
+    X_train_tensor = X_tensor[:train_size]
+    y_train_tensor = y_tensor[:train_size]
+    X_test_tensor = X_tensor[train_size:]
+    y_test_tensor = y_tensor[train_size:]
+    
+    train_data = TensorDataset(X_train_tensor, y_train_tensor)
+    test_data = TensorDataset(X_test_tensor, y_test_tensor)
+    
+    batch_size = 32
+    train_loader = DataLoader(train_data, shuffle=False, batch_size=batch_size)
+    test_loader = DataLoader(test_data, shuffle=False, batch_size=batch_size)
+    
+    input_size = X.shape[2]
+    
+    return train_loader, test_loader, input_size, scaler_y
+
+
+
+
