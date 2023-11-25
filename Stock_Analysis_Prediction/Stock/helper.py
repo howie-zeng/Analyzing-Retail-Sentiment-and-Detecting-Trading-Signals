@@ -6,6 +6,7 @@ import matplotlib.dates as mdates
 import seaborn as sns
 import ta
 from sklearn.metrics import mean_squared_error, accuracy_score, classification_report, confusion_matrix
+import pywt
 
 STOCKS = ["RIVN", "BB", "SOFI", "GME", "AMC", "PLTR", "TSLA", "AAPL", 'QQQ', "SPY", "DIA", "MSFT", "AMZN", "GOOG", '^IRX']
 START_DATE = "2009-01-01"
@@ -542,3 +543,31 @@ def accumulation_distribution(data):
 
     data['AD'] = (clv * data['Volume']).cumsum()
     return data
+
+import pandas as pd
+import pywt
+
+def apply_stationary_wavelet_transform(data, wavelet='haar', level=1):
+    coefficient_dfs = []  
+    for col in data.columns:
+        if pd.api.types.is_numeric_dtype(data[col]) and col != 'Close':
+            coeffs = pywt.swt(data[col], wavelet, level=level, trim_approx=False)
+            # Flatten the coefficients for each level and column
+            flattened_coeffs = [item for sublist in coeffs for item in sublist]
+            coeff_df = pd.DataFrame(flattened_coeffs).T
+            coeff_df.columns = [f'{col}_level_{i}_coeff_{j}' for i in range(len(coeffs)) for j in range(2)]
+            coefficient_dfs.append(coeff_df)
+        else:
+            if col != 'Close':
+                print(f'{col} is not numerical or is the target variable')
+
+    if coefficient_dfs:
+        df = pd.concat(coefficient_dfs, axis=1)
+    else:
+        df = pd.DataFrame() 
+    return df
+
+
+def reconstruct_from_coeffs(coeffs, wavelet='haar'):
+    reconstructed_data = pywt.waverec(coeffs, wavelet)
+    return reconstructed_data
