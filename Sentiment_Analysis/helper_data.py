@@ -109,7 +109,6 @@ def augment_text_with_parallel_back_translation(dataset, n=1):
     return augmented_dataset
 
 
-
 # 3. Paraphrase
 def paraphrase_text(sentence, n=1):
     generator = pipeline("text2text-generation", model="tuner007/pegasus_paraphrase")
