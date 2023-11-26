@@ -28,17 +28,6 @@ class BaseModel(ABC):
         self.model = None
         self.feature_importances = defaultdict(float)
 
-    @abstractmethod
-    def train(self, X, y):
-        pass
-
-    @abstractmethod
-    def predict(self, X):
-        pass
-
-    def get_feature_importance(self):
-        return self.feature_importances
-
 class XGBoostModel(BaseModel):
 
     def __init__(self, loss_fn):
