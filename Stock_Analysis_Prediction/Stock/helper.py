@@ -618,8 +618,9 @@ def create_sequences(input_data, target_data, sequence_length, prediction_length
     xs, ys = [], []
     for i in range(len(input_data) - sequence_length - prediction_length + 1):
         xs.append(input_data[i:(i + sequence_length)])
-        ys.append(target_data[(i + sequence_length):(i + sequence_length + prediction_length)])
+        ys.append(target_data[i + sequence_length + prediction_length - 1])  # Only the price on the 5th day
     return np.array(xs), np.array(ys)
+
 
 def prepare_data_and_model(df_stock, sequence_length, prediction_length, test_size=0.2):
     if len(df_stock) % 2 != 0:  # must be even
@@ -633,8 +634,8 @@ def prepare_data_and_model(df_stock, sequence_length, prediction_length, test_si
     
     X, y = create_sequences(df_stock_swt, close_prices_Y, sequence_length, prediction_length)
     scaler_y = MinMaxScaler(feature_range=(0, 1))
-    y = scaler_y.fit_transform(y)
-    scaler_y = MinMaxScaler(feature_range=(0, 1))
+    # y = scaler_y.fit_transform(y)
+    # scaler_y = MinMaxScaler(feature_range=(0, 1))
     
     X_tensor = torch.tensor(X, dtype=torch.float32)
     y_tensor = torch.tensor(y, dtype=torch.float32)
