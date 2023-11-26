@@ -13,3 +13,5 @@ FinBERT-FinVocab-Uncased
 best_model
 finBERT
 logs
+data
+Sentiment_Analysis/test-trainer
