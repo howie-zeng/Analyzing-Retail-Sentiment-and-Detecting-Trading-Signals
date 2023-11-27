@@ -12,10 +12,10 @@
       "epoch": 1.0,
       "eval_accuracy": 0.5,
       "eval_f1": 0.6666666666666666,
-      "eval_loss": 0.8058676719665527,
-      "eval_runtime": 0.1098,
-      "eval_samples_per_second": 18.208,
-      "eval_steps_per_second": 9.104,
+      "eval_loss": 0.7398532032966614,
+      "eval_runtime": 0.1198,
+      "eval_samples_per_second": 16.691,
+      "eval_steps_per_second": 8.346,
       "step": 1
     }
   ],
@@ -23,7 +23,7 @@
   "max_steps": 5,
   "num_train_epochs": 5,
   "save_steps": 500,
-  "total_flos": 168555519840.0,
+  "total_flos": 180888850560.0,
   "trial_name": null,
   "trial_params": null
 }

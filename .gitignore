@@ -14,3 +14,4 @@ best_model
 finBERT
 logs
 Sentiment_Analysis/test-trainer
+Sentiment_Analysis/data/finetune_data
