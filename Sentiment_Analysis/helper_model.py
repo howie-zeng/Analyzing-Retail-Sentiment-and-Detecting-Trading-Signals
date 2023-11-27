@@ -186,8 +186,6 @@ def evaluate_model(model, test_loader, y_test, embedding_matrix, original_texts,
     return mislabeled_examples
 
 
-
-
 def categorize_errors(mislabeled_examples):
     short_texts = []
     texts_with_not = []
@@ -249,3 +247,12 @@ def clean_directory(directory_path):
                 print(f"Failed to delete: {file_path}, Error: {e}")
     else:
         print(f"Directory not found: {directory_path}")
+
+
+def print_wrong_classifications(predicted_labels, true_labels, test_dataset):
+    assert len(predicted_labels) == len(true_labels) == len(test_dataset), "Input data lengths must match."
+
+    for i in range(len(predicted_labels)):
+        if predicted_labels[i] != true_labels[i]:
+            print(f"Predicted Label: {predicted_labels[i]}, True Label: {true_labels[i]}")
+            print(f"Original Text: {test_dataset[i]['text']}\n")
