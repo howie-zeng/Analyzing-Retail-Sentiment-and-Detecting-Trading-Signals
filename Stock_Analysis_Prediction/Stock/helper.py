@@ -658,5 +658,141 @@ def prepare_data_and_model(df_stock, sequence_length, prediction_length, test_si
     return train_loader, test_loader, input_size, scaler_y
 
 
+def prepare_data(stock_data, stock, fromDate, toDate, lag, stationary=False):
+    df = stock_data[stock].copy()
+    if stationary:
+        df = df[['Date', 'Open', 'High', 'Low', 'Close', 'Close_diff', #'Volume_MA_diff', 
+                 'MA5', 'MA10', 'MA20', 'MA50', 'MA200', 
+                 'WVAD', 'MACD',  'RSI', 'macd_line', 'signal_line', 'CCI', 
+                 'BB_Upper', 'BB_Lower','WVF_color', 'WVF', 'upperBand', 'rangeHigh'
+                 #'VPT', 'AD'
+        ]] 
+    else:
+        df = df[['Date', 'Open', 'High', 'Low', 'Close', 'Volume', #'Volume_MA_diff', 
+            'MA5', 'MA10', 'MA20', 'MA50', 'MA200', 
+            'WVAD', 'MACD',  'RSI', 'macd_line', 'signal_line', 'CCI', 
+            'BB_Upper', 'BB_Lower', 'Buy_Signal', 'Sell_Signal', 
+            'WVF_color', 'WVF', 'upperBand', 'rangeHigh',
+            'VPT', 'AD'
+        ]] 
+    if stationary:
+        y_name = "Close_diff"
+    else:
+        y_name = 'Close'
+
+    stock_ToAdd = ['^IRX', 'SPY', 'QQQ', 'DIA']
+    for item in stock_ToAdd:
+        if item != "^IRX":
+            df = df.merge(stock_data[item][['Date', y_name]], on="Date", how='inner', suffixes=("", f'_{item}'))
+        else:
+            df = df.merge(stock_data[item][['Date', 'Close']], on="Date", how='inner', suffixes=("", f'_{item}'))
+
+    df.set_index('Date', inplace=True)
+    df = df.loc[fromDate:toDate]
+
+    df[f'Return_{lag}_days_later'] = df[y_name].shift(-lag)
+
+    for i in range(1, 11):  # range - 1 lag days
+        df[f'close_lag_{i}'] = df[y_name].shift(i)        
+        #df[f'volume_lag_{i}'] = df['Volume_MA_diff'].shift(i)
+    df.dropna(inplace=True)
+
+    toDrop = ['Open', 'High', 'Low', 'Return_{}_days_later'.format(lag), 'Close']
+    X = df.drop(toDrop, axis=1)
+    y = df[f'Return_{lag}_days_later']
+    return X, y, df
+
+
+def trading_strategy(df_stock, window_size, true_returns, predicted_returns, starting_funds=50000):
+    funds = starting_funds
+    stock_position = 0
+    dates = df_stock.index.values[window_size:]
+    stock_prices = df_stock['Close'].values[window_size:]
+
+    true_returns = pd.Series(true_returns)
+    predicted_returns = pd.Series(predicted_returns)
+
+    portfolio_value = []
+    buys, sells = [None] * len(true_returns), [None] * len(true_returns)
+    for i in range(0, len(true_returns)):
+        if i >= window_size:
+            current_return_window = true_returns[max(0, i-window_size):i]
+            buy_threshold = current_return_window.quantile(0.75)
+            sell_threshold = current_return_window.quantile(0.25)
+        else:
+            portfolio_value.append(starting_funds)
+            continue  # Skip early iterations where the window isn't full
+        
+        past_predictions = predicted_returns[max(0, i - 4):i + 1]
+        buy_signals_count = sum(1 for p in past_predictions if p > buy_threshold)
+        sell_signals_count = sum(1 for p in past_predictions if p < sell_threshold)
+
+        if buy_signals_count >= 3:
+            if funds > 0:
+                stocks_bought = funds // stock_prices[i]
+                funds -= stocks_bought * stock_prices[i]
+                stock_position += stocks_bought
+            buys[i] = stock_prices[i]
+        elif sell_signals_count >= 3:
+            if stock_position > 0:
+                funds += stock_position * stock_prices[i]
+                stock_position = 0
+            sells[i] = stock_prices[i]
+
+        portfolio_value.append(funds + stock_position * stock_prices[i])
+
+    # Calculate portfolio percentage growth
+    portfolio_growth_percentage = [(value - starting_funds) / starting_funds * 100 for value in portfolio_value]
+
+    # Visualization
+    fig, (ax1, ax3) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
+    ax1.set_ylabel('Stock Price', color='tab:blue')
+    ln1 = ax1.plot(dates, stock_prices, color='tab:blue', alpha=0.6, label="Stock Price")
+    ax1.tick_params(axis='y', labelcolor='tab:blue')
+    ax2 = ax1.twinx()
+    ax2.set_ylabel('Portfolio Value', color='tab:purple')
+    ln2 = ax2.plot(dates, portfolio_value, color='tab:purple', alpha=0.6, label="Portfolio Value")
+    ax2.tick_params(axis='y', labelcolor='tab:purple')
+    lns1 = ln1 + ln2
+    labs1 = [l.get_label() for l in lns1]
+    ax1.legend(lns1, labs1, loc='upper left')
+    ax1.set_title("Stock Price and Portfolio Value")
+
+    stock_growth_percentage = [(price - stock_prices[0]) / stock_prices[0] * 100 for price in stock_prices]
+    ln3 = ax3.plot(dates, stock_growth_percentage, color='tab:green', alpha=0.6, label="Stock Growth %", linestyle='dashed')
+    ax3.set_ylabel('Stock Growth (%)', color='tab:green')
+    ax3.tick_params(axis='y', labelcolor='tab:green')
+    ax4 = ax3.twinx()
+    ax4.set_ylabel('Portfolio Growth (%)', color='tab:purple')
+    ln4 = ax4.plot(dates, portfolio_growth_percentage, color='tab:purple', alpha=0.6, label="Portfolio Growth %", linestyle='dotted')
+    ax4.tick_params(axis='y', labelcolor='tab:purple')
+    lns2 = ln3 + ln4
+    labs2 = [l.get_label() for l in lns2]
+    ax3.legend(lns2, labs2, loc='upper left')
+    ax3.set_title("Stock Growth Percentage and Portfolio Growth Percentage")
+    fig.tight_layout()
+    plt.show()
+
+    fig, ax1 = plt.subplots(figsize=(42, 21))
+
+    # Stock Price with Buy/Sell actions
+    ax1.set_ylabel('Stock Price', color='tab:blue')
+    ax1.plot(dates, stock_prices, color='tab:blue', alpha=0.6, label="Stock Price")
+    ax1.scatter(dates, stock_prices, color='black', marker='o', label="Points", alpha=0.2)
+    ax1.tick_params(axis='y', labelcolor='tab:blue')
+
+    # Scatter plots for buy/sell signals
+    buy_idx = [dates[i] for i in range(len(buys)) if buys[i] is not None]
+    sell_idx = [dates[i] for i in range(len(sells)) if sells[i] is not None]
+    buy_prices = [buys[i] for i in range(len(buys)) if buys[i] is not None]
+    sell_prices = [sells[i] for i in range(len(sells)) if sells[i] is not None]
+
+    ax1.scatter(buy_idx, buy_prices, color='g', label="Buy Signal", marker='^', alpha=1)
+    ax1.scatter(sell_idx, sell_prices, color='r', label="Sell Signal", marker='v', alpha=1)
+
+    # Adding legend and showing the plot
+    ax1.legend(loc='upper left')
+    ax1.set_title("Stock Price with Buy/Sell Actions")
+    plt.show()
 
 
