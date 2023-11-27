@@ -664,15 +664,15 @@ def prepare_data(stock_data, stock, fromDate, toDate, lag, stationary=False):
         df = df[['Date', 'Open', 'High', 'Low', 'Close', 'Close_diff', #'Volume_MA_diff', 
                  'MA5', 'MA10', 'MA20', 'MA50', 'MA200', 
                  'WVAD', 'MACD',  'RSI', 'macd_line', 'signal_line', 'CCI', 
-                 'BB_Upper', 'BB_Lower','WVF_color', 'WVF', 'upperBand', 'rangeHigh'
+                 'BB_Upper', 'BB_Lower','WVF_color', 'WVF', 'upperBand'
                  #'VPT', 'AD'
         ]] 
     else:
         df = df[['Date', 'Open', 'High', 'Low', 'Close', 'Volume', #'Volume_MA_diff', 
             'MA5', 'MA10', 'MA20', 'MA50', 'MA200', 
             'WVAD', 'MACD',  'RSI', 'macd_line', 'signal_line', 'CCI', 
-            'BB_Upper', 'BB_Lower', 'Buy_Signal', 'Sell_Signal', 
-            'WVF_color', 'WVF', 'upperBand', 'rangeHigh',
+            'BB_Upper', 'BB_Lower',
+            'WVF_color', 'WVF', 'upperBand',
             'VPT', 'AD'
         ]] 
     if stationary:

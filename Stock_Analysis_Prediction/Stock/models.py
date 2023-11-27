@@ -29,12 +29,13 @@ class BaseModel(ABC):
 
 class XGBoost(BaseModel):
 
-    def __init__(self, loss_fn):
+    def __init__(self, loss_fn, params = {}):
         super().__init__()
         self.loss_fn = loss_fn 
+        self.params = params
 
     def train(self, X, y):
-        self.model = xgb.XGBRegressor(objective=self.loss_fn, n_jobs=-1, random_state=helper.RANDOM_STATE)
+        self.model = xgb.XGBRegressor(**self.params, objective=self.loss_fn, n_jobs=-1, random_state=helper.RANDOM_STATE)
         self.model.fit(X, y)
 
         for i, col in enumerate(X.columns):
@@ -94,7 +95,7 @@ class StockPredictor:
         self.dates = X.index.values
 
         # Calculate returns if stationary
-        if self.stationary:
+        if not self.stationary:
             close_prices = df_stock['Close'].values[self.window_size:]
             self.true_returns = (np.array(true_values) - close_prices) / close_prices * 100
             self.predicted_returns = (np.array(predictions) - close_prices) / close_prices * 100
@@ -112,6 +113,8 @@ class StockPredictor:
 
         self.MSE = MSE
         self.MAE = MAE
+
+        return MAE
 
     def plot_residuals(self):
         true_returns, predicted_returns = self.true_returns, self.predicted_returns
