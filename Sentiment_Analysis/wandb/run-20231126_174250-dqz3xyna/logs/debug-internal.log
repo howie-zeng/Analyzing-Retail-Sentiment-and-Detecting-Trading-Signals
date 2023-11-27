@@ -5607,3 +5607,46 @@
 2023-11-26 21:47:11,695 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
 2023-11-26 21:47:14,359 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: stop_status
 2023-11-26 21:47:14,360 DEBUG   SenderThread:19496 [sender.py:send_request():363] send_request: stop_status
+2023-11-26 21:47:16,840 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:47:21,884 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:47:26,910 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:47:29,351 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: stop_status
+2023-11-26 21:47:29,351 DEBUG   SenderThread:19496 [sender.py:send_request():363] send_request: stop_status
+2023-11-26 21:47:32,652 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:47:37,692 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:47:42,754 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:47:44,356 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: stop_status
+2023-11-26 21:47:44,356 DEBUG   SenderThread:19496 [sender.py:send_request():363] send_request: stop_status
+2023-11-26 21:47:48,629 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:47:53,671 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:47:58,709 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:47:59,368 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: stop_status
+2023-11-26 21:47:59,368 DEBUG   SenderThread:19496 [sender.py:send_request():363] send_request: stop_status
+2023-11-26 21:48:04,657 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:48:09,501 INFO    Thread-17 :19496 [dir_watcher.py:_on_file_created():278] file/dir created: d:\OneDrive\Cornell\Fall 2023\Analyzing-the-Correlation-Between-Retail-Traders--Sentiments-and-Equity-Market-Movements\Sentiment_Analysis\wandb\run-20231126_174250-dqz3xyna\files\wandb-summary.json
+2023-11-26 21:48:09,502 INFO    Thread-17 :19496 [dir_watcher.py:_on_file_created():278] file/dir created: d:\OneDrive\Cornell\Fall 2023\Analyzing-the-Correlation-Between-Retail-Traders--Sentiments-and-Equity-Market-Movements\Sentiment_Analysis\wandb\run-20231126_174250-dqz3xyna\files\config.yaml
+2023-11-26 21:48:09,502 INFO    Thread-17 :19496 [dir_watcher.py:_on_file_created():278] file/dir created: d:\OneDrive\Cornell\Fall 2023\Analyzing-the-Correlation-Between-Retail-Traders--Sentiments-and-Equity-Market-Movements\Sentiment_Analysis\wandb\run-20231126_174250-dqz3xyna\files\wandb-metadata.json
+2023-11-26 21:48:09,502 INFO    Thread-17 :19496 [dir_watcher.py:_on_file_created():278] file/dir created: d:\OneDrive\Cornell\Fall 2023\Analyzing-the-Correlation-Between-Retail-Traders--Sentiments-and-Equity-Market-Movements\Sentiment_Analysis\wandb\run-20231126_174250-dqz3xyna\files\requirements.txt
+2023-11-26 21:48:09,686 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:48:14,369 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: stop_status
+2023-11-26 21:48:14,369 DEBUG   SenderThread:19496 [sender.py:send_request():363] send_request: stop_status
+2023-11-26 21:48:15,651 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:48:20,707 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:48:25,756 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:48:29,381 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: stop_status
+2023-11-26 21:48:29,382 DEBUG   SenderThread:19496 [sender.py:send_request():363] send_request: stop_status
+2023-11-26 21:48:31,691 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:48:36,712 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:48:41,756 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:48:44,379 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: stop_status
+2023-11-26 21:48:44,379 DEBUG   SenderThread:19496 [sender.py:send_request():363] send_request: stop_status
+2023-11-26 21:48:47,659 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:48:52,691 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:48:57,712 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:48:59,392 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: stop_status
+2023-11-26 21:48:59,393 DEBUG   SenderThread:19496 [sender.py:send_request():363] send_request: stop_status
+2023-11-26 21:49:03,708 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:49:08,748 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:49:13,780 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:49:14,410 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: stop_status
+2023-11-26 21:49:14,410 DEBUG   SenderThread:19496 [sender.py:send_request():363] send_request: stop_status
