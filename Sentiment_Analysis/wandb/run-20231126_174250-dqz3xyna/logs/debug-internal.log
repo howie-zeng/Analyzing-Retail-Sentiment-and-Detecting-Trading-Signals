@@ -5591,3 +5591,19 @@
 2023-11-26 21:46:29,663 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
 2023-11-26 21:46:34,700 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
 2023-11-26 21:46:39,744 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:46:44,345 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: stop_status
+2023-11-26 21:46:44,345 DEBUG   SenderThread:19496 [sender.py:send_request():363] send_request: stop_status
+2023-11-26 21:46:45,596 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:46:50,632 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:46:55,677 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:46:56,846 INFO    Thread-17 :19496 [dir_watcher.py:_on_file_created():278] file/dir created: d:\OneDrive\Cornell\Fall 2023\Analyzing-the-Correlation-Between-Retail-Traders--Sentiments-and-Equity-Market-Movements\Sentiment_Analysis\wandb\run-20231126_174250-dqz3xyna\files\wandb-summary.json
+2023-11-26 21:46:56,846 INFO    Thread-17 :19496 [dir_watcher.py:_on_file_created():278] file/dir created: d:\OneDrive\Cornell\Fall 2023\Analyzing-the-Correlation-Between-Retail-Traders--Sentiments-and-Equity-Market-Movements\Sentiment_Analysis\wandb\run-20231126_174250-dqz3xyna\files\config.yaml
+2023-11-26 21:46:56,846 INFO    Thread-17 :19496 [dir_watcher.py:_on_file_created():278] file/dir created: d:\OneDrive\Cornell\Fall 2023\Analyzing-the-Correlation-Between-Retail-Traders--Sentiments-and-Equity-Market-Movements\Sentiment_Analysis\wandb\run-20231126_174250-dqz3xyna\files\wandb-metadata.json
+2023-11-26 21:46:56,846 INFO    Thread-17 :19496 [dir_watcher.py:_on_file_created():278] file/dir created: d:\OneDrive\Cornell\Fall 2023\Analyzing-the-Correlation-Between-Retail-Traders--Sentiments-and-Equity-Market-Movements\Sentiment_Analysis\wandb\run-20231126_174250-dqz3xyna\files\requirements.txt
+2023-11-26 21:46:59,349 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: stop_status
+2023-11-26 21:46:59,349 DEBUG   SenderThread:19496 [sender.py:send_request():363] send_request: stop_status
+2023-11-26 21:47:01,619 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:47:06,661 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:47:11,695 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: status_report
+2023-11-26 21:47:14,359 DEBUG   HandlerThread:19496 [handler.py:handle_request():144] handle_request: stop_status
+2023-11-26 21:47:14,360 DEBUG   SenderThread:19496 [sender.py:send_request():363] send_request: stop_status
