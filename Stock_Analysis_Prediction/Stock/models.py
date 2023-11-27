@@ -72,7 +72,7 @@ class StockPredictor:
         self.model = model
         self.stationary = stationary
 
-    def fit_predict(self, X, y):
+    def fit_predict(self, X, y, df_stock):
         predictions = []
         true_values = []
 
@@ -95,7 +95,7 @@ class StockPredictor:
 
         # Calculate returns if stationary
         if self.stationary:
-            close_prices = X['Close'].values[self.window_size:]
+            close_prices = df_stock['Close'].values[self.window_size:]
             self.true_returns = (np.array(true_values) - close_prices) / close_prices * 100
             self.predicted_returns = (np.array(predictions) - close_prices) / close_prices * 100
         else:
