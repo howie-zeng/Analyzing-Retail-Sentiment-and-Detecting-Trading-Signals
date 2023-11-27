@@ -70,60 +70,9 @@ class StockPredictor:
     def __init__(self, model, window_size=200, stationary=False):
         self.window_size = window_size
         self.model = model
-        self.prepare_data()
+        self.stationary = stationary
 
-    def prepare_data(self):
-        df = self.stock_data[self.stock].copy()
-        df = df[['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 
-                 'MA5', 'MA10', 'MA20', 'MA50', 'MA200', 
-                 'WVAD', 'MACD',  'RSI', 'macd_line', 'signal_line', 'CCI', 
-                 'BB_Upper', 'BB_Lower', 'Buy_Signal', 'Sell_Signal', 
-                 'WVF_color', 'WVF', 'upperBand', 'rangeHigh',
-                 'VPT', 'AD'
-                ]] 
-
-        # Merging other stocks, economic indicator
-        dataToAdd = ['^TNX', 'SPY', 'QQQ', 'DIA'] # 'QQQ', "SPY", "MSFT", "AMZN", "GOOG",'DIA'
-        for item in dataToAdd:
-            df = df.merge(self.stock_data[item][['Date', 'Close']], on="Date", how='inner', suffixes=("", f'_{item}'))
-
-        df.set_index('Date', inplace=True)
-        df = df.loc[self.fromDate:self.toDate]
-        df[f'Close_{self.lag}_days_later'] = df['Close'].shift(-self.lag)
-
-        # Uncomment if you want to introduce these features later
-        # df['relative_volume'] = df['Volume'] / self.data['MA_Volume']
-        # df['rsi_class'] = df['rsi_class'].astype('category')
-        # df['rsi_class'] = df['rsi_class'].cat.codes
-        # df['greenDay'] = df['Open'] > self.data['Close']
-        # df['open_close_diff'] = df['Close'] - self.data['Open']/ self.data['Open']
-        # df['high_close_diff'] = df.apply(lambda row: (row['High'] - row['Low'])/row['Low'] * (1 if row['greenDay'] else -1), axis=1)
-        # df['greenDay'] = df['Open'] > df['Close']
-        # df['open_close_diff'] = (df['Close'] - df['Open']) / df['Open']
-        # df['high_close_diff'] = df.apply(lambda row: (row['High'] - row['Low']) / row['Low'] * (1 if row['greenDay'] else -1), axis=1)
-        
-        df['MACD'] = df['macd_line'] - df['signal_line']
-        for i in range(1, 11):  # range - 1 lag days
-            df[f'close_lag_{i}'] = df['Close'].shift(i)
-            #df[f'close_spy_lag_{i}'] = df['Close_SPY'].shift(i)
-            #df[f'close_qqq_lag_{i}'] = df['Close_QQQ'].shift(i)
-            
-            #df[f'volume_lag_{i}'] = df['Volume'].shift(i)
-            # df[f'Open_lag_{i}'] = df['Open'].shift(i)
-            # df[f'High_lag_{i}'] = df['High'].shift(i)
-            # df[f'Low_lag_{i}'] = df['Low'].shift(i)
-            # df[f'volume_lag_{i}'] = df['Volume'].shift(i)
-            # df[f'RSI_lag_{i}'] = df['RSI'].shift(i)
-
-        df.dropna(inplace=True)
-
-        toDrop = ['Open', 'High', 'Low', 'Close_{}_days_later'.format(self.lag)]
-        self.df = df
-        self.X = df.drop(toDrop, axis=1, errors='ignore')
-        self.y = df[f'Close_{self.lag}_days_later']
-
-
-    def fit_predict(self):
+    def fit_predict(self, X, y):
         predictions = []
         true_values = []
 
@@ -139,9 +88,31 @@ class StockPredictor:
             true_values.append(y_test.iloc[0])
 
         self.predictions = predictions
-        self.true_values=true_values
-        self.current_prices=current_prices
-    
+        self.true_values = true_values
+        self.X = X
+        self.y = y
+        self.dates = X.index.values
+
+        # Calculate returns if stationary
+        if self.stationary:
+            close_prices = X['Close'].values[self.window_size:]
+            self.true_returns = (np.array(true_values) - close_prices) / close_prices * 100
+            self.predicted_returns = (np.array(predictions) - close_prices) / close_prices * 100
+        else:
+            self.true_returns = self.true_values
+            self.predicted_returns = self.predictions
+
+    def print_metrics(self):
+        true_returns, predicted_returns = self.true_returns, self.predicted_returns
+        MSE = mean_squared_error(true_returns, predicted_returns)
+        MAE = mean_absolute_error(true_returns, predicted_returns)
+
+        print(f"Mean Squared Error (MSE): {MSE:.4f}")
+        print(f"Mean Absolute Error (MAE): {MAE:.4f}")
+
+        self.MSE = MSE
+        self.MAE = MAE
+
     def plot_residuals(self):
         true_returns, predicted_returns = self.true_returns, self.predicted_returns
         residuals = [(pred - true) for true, pred in zip(true_returns, predicted_returns)]
