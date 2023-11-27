@@ -20,9 +20,9 @@ import pywt
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-STOCKS = ["RIVN", "BB", "SOFI", "GME", "AMC", "PLTR", "TSLA", "AAPL", 'QQQ', "SPY", "DIA", "MSFT", "AMZN", "GOOG", '^IRX']
+STOCKS = ["RIVN", "BB", "SOFI", "GME", "AMC", "PLTR","TSLA", "AAPL", "MSFT", "AMZN", "GOOG", 'AMD', "NVDA", 'QQQ', "SPY", "DIA", "^IRX"]
 START_DATE = "2009-01-01"
-END_DATE = "2023-01-01"
+END_DATE = "2023-11-01"
 MAs = [5, 10, 20, 50, 100, 200]
 PRICE_FEATURES_TO_CONVERT = ['MA5', 'MA10', 'MA20', 'MA50', 'MA100', 'MA200', 'BB_Upper', 'BB_Lower', 'Upper Band', 'SMA', 'Lower Band']
 VOLUME_FEATURES_TO_CONVERT = ['Volume']
@@ -609,6 +609,9 @@ def preprocess_stock_data(stock_data, STOCKS):
             data = volume_price_trend(data)
             data = money_flow_index(data)
             data = accumulation_distribution(data)
+            # convert volume related features into something stationary
+            data['Volume_MA5'] = data['Volume'].rolling(window=5).mean()
+            data['Volume_MA_diff'] = (data['Volume'] - data['Volume_MA5'])/(data['Volume_MA5'])
             data = data.dropna()
         processed_data[stock] = data
         print(f"Data fetched for {stock}")
@@ -661,20 +664,22 @@ def prepare_data_and_model(df_stock, sequence_length, prediction_length, test_si
 def prepare_data(stock_data, stock, fromDate, toDate, lag, stationary=False):
     df = stock_data[stock].copy()
     if stationary:
-        df = df[['Date', 'Open', 'High', 'Low', 'Close', 'Close_diff', #'Volume_MA_diff', 
+        df = df[['Date','Close_diff', 'Close', 'Volume_MA_diff', 
                  'MA5', 'MA10', 'MA20', 'MA50', 'MA200', 
                  'WVAD', 'MACD',  'RSI', 'macd_line', 'signal_line', 'CCI', 
-                 'BB_Upper', 'BB_Lower','WVF_color', 'WVF', 'upperBand'
-                 #'VPT', 'AD'
+                 'BB_Upper', 'BB_Lower', 'WVF', 'upperBand',
+                 'VPT', 'AD'
         ]] 
+        toDrop = ['Close', 'Return_{}_days_later'.format(lag)]
     else:
-        df = df[['Date', 'Open', 'High', 'Low', 'Close', 'Volume', #'Volume_MA_diff', 
+        df = df[['Date', 'Close', 'Volume', 'Volume_MA5', 
             'MA5', 'MA10', 'MA20', 'MA50', 'MA200', 
             'WVAD', 'MACD',  'RSI', 'macd_line', 'signal_line', 'CCI', 
-            'BB_Upper', 'BB_Lower',
-            'WVF_color', 'WVF', 'upperBand',
+            'BB_Upper', 'BB_Lower', 'upperBand', 'WVF',
             'VPT', 'AD'
         ]] 
+        toDrop = ['Return_{}_days_later'.format(lag)]
+
     if stationary:
         y_name = "Close_diff"
     else:
@@ -689,15 +694,20 @@ def prepare_data(stock_data, stock, fromDate, toDate, lag, stationary=False):
 
     df.set_index('Date', inplace=True)
     df = df.loc[fromDate:toDate]
+    if stationary:
+        df[f'Return_{lag}_days_later'] = (df['Close'].shift(-lag) - df['Close'])/df['Close'] * 100
+    else:
+        df[f'Return_{lag}_days_later'] = df['Close'].shift(-lag)
 
-    df[f'Return_{lag}_days_later'] = df[y_name].shift(-lag)
 
-    for i in range(1, 11):  # range - 1 lag days
-        df[f'close_lag_{i}'] = df[y_name].shift(i)        
-        #df[f'volume_lag_{i}'] = df['Volume_MA_diff'].shift(i)
+    for i in range(1, 5):  # range - 1 lag days
+        df[f'close_lag_{i}'] = df[y_name].shift(i)    
+        # for item in ['SPY']:
+        #     df[f'{item}_close_lag_{i}'] = df[f'{y_name}_SPY'].shift(i)      
+        #df[f'volume_lag_{i}'] = df['Volume'].shift(i)
     df.dropna(inplace=True)
 
-    toDrop = ['Open', 'High', 'Low', 'Return_{}_days_later'.format(lag), 'Close']
+    
     X = df.drop(toDrop, axis=1)
     y = df[f'Return_{lag}_days_later']
     return X, y, df
@@ -721,23 +731,25 @@ def trading_strategy(df_stock, window_size, true_returns, predicted_returns, sta
             sell_threshold = current_return_window.quantile(0.25)
         else:
             portfolio_value.append(starting_funds)
-            continue  # Skip early iterations where the window isn't full
+            continue  # skip early iterations where the window isn't full
         
-        past_predictions = predicted_returns[max(0, i - 4):i + 1]
+        # past five days
+        past_predictions = predicted_returns[max(0, i - 4):i + 1] # python does include the last number
         buy_signals_count = sum(1 for p in past_predictions if p > buy_threshold)
         sell_signals_count = sum(1 for p in past_predictions if p < sell_threshold)
+        
 
         if buy_signals_count >= 3:
-            if funds > 0:
+            if funds > stock_prices[i]:
                 stocks_bought = funds // stock_prices[i]
                 funds -= stocks_bought * stock_prices[i]
                 stock_position += stocks_bought
-            buys[i] = stock_prices[i]
+                buys[i] = stock_prices[i]
         elif sell_signals_count >= 3:
             if stock_position > 0:
                 funds += stock_position * stock_prices[i]
                 stock_position = 0
-            sells[i] = stock_prices[i]
+                sells[i] = stock_prices[i]
 
         portfolio_value.append(funds + stock_position * stock_prices[i])
 
@@ -778,7 +790,7 @@ def trading_strategy(df_stock, window_size, true_returns, predicted_returns, sta
     # Stock Price with Buy/Sell actions
     ax1.set_ylabel('Stock Price', color='tab:blue')
     ax1.plot(dates, stock_prices, color='tab:blue', alpha=0.6, label="Stock Price")
-    ax1.scatter(dates, stock_prices, color='black', marker='o', label="Points", alpha=0.2)
+    ax1.scatter(dates, stock_prices, color='black', marker='o', label="Points", alpha=0.1)
     ax1.tick_params(axis='y', labelcolor='tab:blue')
 
     # Scatter plots for buy/sell signals

@@ -35,7 +35,16 @@ class XGBoost(BaseModel):
         self.params = params
 
     def train(self, X, y):
-        self.model = xgb.XGBRegressor(**self.params, tree_method='gpu_hist', objective=self.loss_fn, n_jobs=-1, random_state=helper.RANDOM_STATE)
+        params = {
+            #'tree_method': 'hist',
+            #'device': device,  # Use GPU
+            **self.params,
+            'objective': self.loss_fn,
+            'n_jobs': -1,
+            'random_state': helper.RANDOM_STATE
+        }
+        self.model = xgb.XGBRegressor(**params)
+        
         self.model.fit(X, y)
 
         for i, col in enumerate(X.columns):
@@ -141,6 +150,7 @@ class StockPredictor:
         plt.xlabel('Importance')
         plt.title(f'Top {n} Average Feature Importances Across All Models')
         plt.gca().invert_yaxis()  
+        plt.grid()
         plt.show()
 
 
