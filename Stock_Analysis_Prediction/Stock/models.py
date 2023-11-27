@@ -27,7 +27,7 @@ class BaseModel(ABC):
         self.model = None
         self.feature_importances = defaultdict(float)
 
-class XGBoostModel(BaseModel):
+class XGBoost(BaseModel):
 
     def __init__(self, loss_fn):
         super().__init__()
@@ -39,6 +39,9 @@ class XGBoostModel(BaseModel):
 
         for i, col in enumerate(X.columns):
             self.feature_importances[col] += self.model.feature_importances_[i]
+
+    def get_feature_importance(self):
+        return self.feature_importances
 
     def predict(self, X):
         return self.model.predict(X)
@@ -55,22 +58,19 @@ class RandomForest(BaseModel):
         for col, importance in zip(X.columns, self.model.feature_importances_):
             self.feature_importances[col] = self.feature_importances.get(col, 0) + importance
 
+    def get_feature_importance(self):
+        return self.feature_importances
+
     def predict(self, X):
         return self.model.predict(X)
     
 
 class StockPredictor:
 
-    def __init__(self, df_stock, model, stock, fromDate, toDate, window_size=200, lag=5, stationary=False):
-        self.df_stock = df_stock
-        self.stock = stock
-        self.fromDate = fromDate
-        self.toDate = toDate
+    def __init__(self, model, window_size=200, stationary=False):
         self.window_size = window_size
-        self.lag = lag
         self.model = model
         self.stationary = stationary
-
 
     def fit_predict(self, X, y):
         predictions = []
@@ -89,20 +89,39 @@ class StockPredictor:
 
         self.predictions = predictions
         self.true_values = true_values
+        self.X = X
+        self.y = y
+        self.dates = X.index.values
+
+        # Calculate returns if stationary
+        if self.stationary:
+            close_prices = X['Close'].values[self.window_size:]
+            self.true_returns = (np.array(true_values) - close_prices) / close_prices * 100
+            self.predicted_returns = (np.array(predictions) - close_prices) / close_prices * 100
+        else:
+            self.true_returns = self.true_values
+            self.predicted_returns = self.predictions
+
+    def print_metrics(self):
+        true_returns, predicted_returns = self.true_returns, self.predicted_returns
+        MSE = mean_squared_error(true_returns, predicted_returns)
+        MAE = mean_absolute_error(true_returns, predicted_returns)
+
+        print(f"Mean Squared Error (MSE): {MSE:.4f}")
+        print(f"Mean Absolute Error (MAE): {MAE:.4f}")
+
+        self.MSE = MSE
+        self.MAE = MAE
 
     def plot_residuals(self):
-        if self.stationary:
-            
-
-
-        residuals = [(pred - true) for true, pred in zip(self.true_values, self.predictions)]
-        data = self.df
-
+        true_returns, predicted_returns = self.true_returns, self.predicted_returns
+        residuals = [(pred - true) for true, pred in zip(true_returns, predicted_returns)]
+        plot_dates = self.dates[self.window_size:]
         plt.figure(figsize=(12, 6))
-        plt.scatter(data.index.values[self.window_size:], residuals, alpha=0.5)
+        plt.scatter(plot_dates, residuals, alpha=0.5)
         plt.axhline(0, color='red', linestyle='--')
         plt.title('Residuals Analysis')
-        plt.ylabel('Residuals %')
+        plt.ylabel('Residuals')
         plt.xlabel('Date')
         plt.xticks(rotation=45)  
         plt.tight_layout() 
@@ -121,5 +140,7 @@ class StockPredictor:
         plt.gca().invert_yaxis()  
         plt.show()
 
-    
+
+
+
     

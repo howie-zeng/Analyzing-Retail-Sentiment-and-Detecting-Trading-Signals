@@ -106,7 +106,6 @@ class StockPredictor:
         # df['open_close_diff'] = (df['Close'] - df['Open']) / df['Open']
         # df['high_close_diff'] = df.apply(lambda row: (row['High'] - row['Low']) / row['Low'] * (1 if row['greenDay'] else -1), axis=1)
         
-        df['MACD'] = df['macd_line'] - df['signal_line']
         for i in range(1, 11):  # range - 1 lag days
             df[f'close_lag_{i}'] = df['Close_diff'].shift(i)        
             df[f'volume_lag_{i}'] = df['Volume_MA_diff'].shift(i)
