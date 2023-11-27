@@ -56,13 +56,20 @@ class XGBoost(BaseModel):
     def predict(self, X):
         return self.model.predict(X)
 class RandomForest(BaseModel):
-    def __init__(self, loss_fn):
+    def __init__(self, loss_fn, params={}):
         super().__init__()
         self.loss_fn = loss_fn
+        self.parms = params
         self.feature_importances = {} 
 
     def train(self, X, y):
-        self.model = RandomForestRegressor(criterion=self.loss_fn, n_jobs=-1, random_state=helper.RANDOM_STATE)
+        params = {
+            **self.params,
+            criterion=self.loss_fn, 
+            n_jobs=-1, 
+            random_state=helper.RANDOM_STATE
+                }
+        self.model = RandomForestRegressor(**params)
         self.model.fit(X, y)
 
         for col, importance in zip(X.columns, self.model.feature_importances_):
