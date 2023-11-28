@@ -736,7 +736,7 @@ def trading_strategy(df_stock, window_size, true_returns, predicted_returns, sta
             continue  # skip early iterations where the window isn't full
         
         # past five days
-        past_predictions = predicted_returns[max(0, i - 4):i + 1] # python does include the last number
+        past_predictions = predicted_returns[max(0, i - 4):i + 1] # python does not include the last number
         buy_signals_count = sum(1 for p in past_predictions if p > buy_threshold)
         sell_signals_count = sum(1 for p in past_predictions if p < sell_threshold)
         
