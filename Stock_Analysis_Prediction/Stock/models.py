@@ -59,16 +59,16 @@ class RandomForest(BaseModel):
     def __init__(self, loss_fn, params={}):
         super().__init__()
         self.loss_fn = loss_fn
-        self.parms = params
+        self.params = params
         self.feature_importances = {} 
 
     def train(self, X, y):
         params = {
             **self.params,
-            criterion=self.loss_fn, 
-            n_jobs=-1, 
-            random_state=helper.RANDOM_STATE
-                }
+            'criterion': self.loss_fn, 
+            'n_jobs': -1, 
+            'random_state': helper.RANDOM_STATE
+             }
         self.model = RandomForestRegressor(**params)
         self.model.fit(X, y)
 
