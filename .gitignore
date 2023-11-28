@@ -1,18 +1,23 @@
+# Ignore specific file extensions
 *.csv
 *.pt
 *.bin
 *.exe
 
-# Sentiment_Analysis
-Sentiment_Analysis\__pycache__
-bert-base-uncased-finetuned-1
-distilbert-base-uncased-finetuned-1
-Nov25_14-12-42_DESKTOP-NPM1H0J
-finetuned_model
-FinBERT-FinVocab-Uncased
-best_model
-finBERT
-logs
+# Ignore files and directories in Sentiment_Analysis
+Sentiment_Analysis/__pycache__/
+Sentiment_Analysis/bert-base-uncased-finetuned-1/
+Sentiment_Analysis/distilbert-base-uncased-finetuned-1/
+Sentiment_Analysis/Nov25_14-12-42_DESKTOP-NPM1H0J/
+Sentiment_Analysis/finetuned_model/
+Sentiment_Analysis/FinBERT-FinVocab-Uncased/
+Sentiment_Analysis/best_model/
+Sentiment_Analysis/finBERT/
+Sentiment_Analysis/logs/
 Sentiment_Analysis/test-trainer/*
+
+# Ignore files and directories in Sentiment_Analysis/data/finetune_data
 Sentiment_Analysis/data/finetune_data/*
-Stock_Analysis_Prediction/Social_Media/__pycache__/*
+
+# Ignore files in Stock_Analysis_Prediction/Social_Media/__pycache__
+Stock_Analysis_Prediction/Social_Media/__pycache__/
