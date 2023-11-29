@@ -74,6 +74,8 @@ def make_predictions_and_save_csv(model, tokenized_datasets, raw_datasets, input
 
     result_df = pd.DataFrame({
         'text': raw_datasets[input_data]['text'],
+        'date': raw_datasets[input_data]['date'],
+        'stock': raw_datasets[input_data]['stock'],
         'Predicted_Labels': predicted_labels,
         'Probability_Class_0': probabilities[:, 0],
         'Probability_Class_1': probabilities[:, 1],  # 2 classes
