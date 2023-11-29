@@ -22,7 +22,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 STOCKS = ["RIVN", "BB", "SOFI", "GME", "AMC", "PLTR","TSLA", "AAPL", "MSFT", "AMZN", "GOOG", 'AMD', "NVDA", 'QQQ', "SPY", "DIA", "^IRX"]
 START_DATE = "2009-01-01"
-END_DATE = "2023-11-24"
+END_DATE = "2023-11-21"
 MAs = [5, 10, 20, 50, 100, 200]
 PRICE_FEATURES_TO_CONVERT = ['MA5', 'MA10', 'MA20', 'MA50', 'MA100', 'MA200', 'BB_Upper', 'BB_Lower', 'Upper Band', 'SMA', 'Lower Band']
 VOLUME_FEATURES_TO_CONVERT = ['Volume']
