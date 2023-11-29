@@ -22,7 +22,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 STOCKS = ["RIVN", "BB", "SOFI", "GME", "AMC", "PLTR","TSLA", "AAPL", "MSFT", "AMZN", "GOOG", 'AMD', "NVDA", 'QQQ', "SPY", "DIA", "^IRX"]
 START_DATE = "2009-01-01"
-END_DATE = "2023-11-20"
+END_DATE = "2023-11-24"
 MAs = [5, 10, 20, 50, 100, 200]
 PRICE_FEATURES_TO_CONVERT = ['MA5', 'MA10', 'MA20', 'MA50', 'MA100', 'MA200', 'BB_Upper', 'BB_Lower', 'Upper Band', 'SMA', 'Lower Band']
 VOLUME_FEATURES_TO_CONVERT = ['Volume']
@@ -760,7 +760,7 @@ def trading_strategy(df_stock, window_size, true_returns, predicted_returns, sta
 
     return buys, sells, portfolio_value, portfolio_growth_percentage, dates, stock_prices
 
-def plot_signal_returns(buys, sells, portfolio_value, portfolio_growth_percentage, dates, stock_prices):
+def plot_signal_returns(buys, sells, portfolio_value, portfolio_growth_percentage, dates, stock_prices, display=True):
     # Visualization
     fig, (ax1, ax3) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
     ax1.set_ylabel('Stock Price', color='tab:blue')
@@ -788,6 +788,8 @@ def plot_signal_returns(buys, sells, portfolio_value, portfolio_growth_percentag
     ax3.legend(lns2, labs2, loc='upper left')
     ax3.set_title("Stock Growth Percentage and Portfolio Growth Percentage")
     fig.tight_layout()
+    if not display:
+        plt.close()
 
     fig2, ax1 = plt.subplots(figsize=(42, 21))
 
@@ -809,6 +811,8 @@ def plot_signal_returns(buys, sells, portfolio_value, portfolio_growth_percentag
     # Adding legend and showing the plot
     ax1.legend(loc='upper left')
     ax1.set_title("Stock Price with Buy/Sell Actions")
+    if display:
+        plt.close()
 
     return fig, fig2
 
