@@ -25,3 +25,5 @@ Stock_Analysis_Prediction/Social_Media/__pycache__/
 
 
 Unlabelled_Data/data/*
+
+Unlabelled_Data/__pycache__/*
