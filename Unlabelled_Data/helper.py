@@ -1,4 +1,5 @@
 import os
+import torch
 import pandas as pd
 import numpy as np
 import pandas as pd
@@ -60,6 +61,8 @@ def plot_daily_post_counts(df, stock_symbol):
 
 
 def make_predictions_and_save_csv(model, tokenized_datasets, raw_datasets, input_data):
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    model.to(device)
     trainer = Trainer(model=model)
     predictions = trainer.predict(tokenized_datasets[input_data])
     
@@ -73,8 +76,8 @@ def make_predictions_and_save_csv(model, tokenized_datasets, raw_datasets, input
     print("Predicted Labels:\n", predicted_labels)
 
     result_df = pd.DataFrame({
-        'text': raw_datasets[input_data]['text'],
         'date': raw_datasets[input_data]['date'],
+        'text': raw_datasets[input_data]['text'],
         'stock': raw_datasets[input_data]['stock'],
         'Predicted_Labels': predicted_labels,
         'Probability_Class_0': probabilities[:, 0],
