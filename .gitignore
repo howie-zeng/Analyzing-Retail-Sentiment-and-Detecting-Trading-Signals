@@ -21,3 +21,7 @@ Sentiment_Analysis/data/finetune_data/*
 
 # Ignore files in Stock_Analysis_Prediction/Social_Media/__pycache__
 Stock_Analysis_Prediction/Social_Media/__pycache__/
+
+
+
+Unlabelled_Data/data/*
