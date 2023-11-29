@@ -1,7 +1,14 @@
+import os
 import pandas as pd
+import numpy as np
+import pandas as pd
+
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
+
+from transformers import Trainer
+from scipy.special import softmax
 
 
 def calculate_ratio(dataframe, date_column, length):
@@ -50,3 +57,28 @@ def plot_daily_post_counts(df, stock_symbol):
     plt.tight_layout()
     plt.legend()
     plt.show()
+
+
+def make_predictions_and_save_csv(model, tokenized_datasets, raw_datasets, input_data):
+    trainer = Trainer(model=model)
+    predictions = trainer.predict(tokenized_datasets[input_data])
+    
+    # Apply softmax to convert logits to probabilities
+    probabilities = softmax(predictions.predictions, axis=1)
+
+    # Get the predicted class labels
+    predicted_labels = np.argmax(probabilities, axis=1)
+
+    print("Probabilities:\n", probabilities)
+    print("Predicted Labels:\n", predicted_labels)
+
+    result_df = pd.DataFrame({
+        'text': raw_datasets[input_data]['text'],
+        'Predicted_Labels': predicted_labels,
+        'Probability_Class_0': probabilities[:, 0],
+        'Probability_Class_1': probabilities[:, 1],  # 2 classes
+    })
+
+    output_csv_path = f"predictions_{input_data}.csv"
+    result_df.to_csv(output_csv_path, index=False)
+    print(f"Predictions have been saved to {output_csv_path}")
