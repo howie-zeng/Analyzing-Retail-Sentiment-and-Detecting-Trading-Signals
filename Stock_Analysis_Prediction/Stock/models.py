@@ -124,8 +124,8 @@ class StockPredictor:
         MSE = mean_squared_error(true_returns, predicted_returns)
         MAE = mean_absolute_error(true_returns, predicted_returns)
 
-        print(f"Mean Squared Error (MSE): {MSE:.4f}")
-        print(f"Mean Absolute Error (MAE): {MAE:.4f}")
+        #print(f"Mean Squared Error (MSE): {MSE:.4f}")
+        #print(f"Mean Absolute Error (MAE): {MAE:.4f}")
 
         self.MSE = MSE
         self.MAE = MAE
