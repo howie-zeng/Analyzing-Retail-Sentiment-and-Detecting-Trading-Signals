@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... [head content] ... -->
+</head>
+<body>
+    <form id="filterForm" method="post" action="/filter">
+        <select name="stock">
+            {% for stock_name in stock_names %}
+            <option value="{{ stock_name }}">{{ stock_name }}</option>
+            {% endfor %}
+
+        </select>
+        <input type="date" name="start_date" required>
+        <input type="date" name="end_date" required>
+        <input type="number" name="min_price" step="0.01" required>
+        <input type="number" name="max_price" step="0.01" required>
+        <input type="number" name="min_volume" required>
+        <input type="number" name="max_volume" required>
+        <select name="chart_type">
+            <option value="line_chart">Line Chart</option>
+            <option value="candlestick_chart">Candlestick Chart</option>
+        </select>
+
+        <button type="submit">Apply Filters</button>
+    </form>
+    <div id="results">
+        <!-- Results will be displayed here -->
+    </div>
+</body>
+</html>
