@@ -25,4 +25,5 @@ Stock_Analysis_Prediction/Social_Media/__pycache__/
 
 
 Unlabelled_Data/data/*
-*.safetensors
+
+Unlabelled_Data/__pycache__/*
