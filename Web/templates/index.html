@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Data Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <form id="stockForm">
+        <label for="stock_symbol">Select stock:</label>
+        <select name="stock_symbol" id="stock_symbol">
+            {% for symbol in stock_symbols %}
+                <option value="{{ symbol }}">{{ symbol }}</option>
+            {% endfor %}
+        </select>
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" value="2019-01-01">
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" value="2023-11-10">
+        <input type="submit" value="Get Data">
+    </form>
+
+    <div id="plot"></div>
+
+    <script>
+        document.getElementById('stockForm').onsubmit = function(event){
+            event.preventDefault();
+            fetch('/get_stock_data', {
+                method: 'POST',
+                body: new FormData(document.getElementById('stockForm')),
+            })
+            .then(response => response.json())
+            .then(data => {
+                Plotly.newPlot('plot', JSON.parse(data.plot).data);
+            });
+        };
+    </script>
+</body>
+</html>
