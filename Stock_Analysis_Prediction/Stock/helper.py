@@ -817,3 +817,106 @@ def plot_signal_returns(buys, sells, portfolio_value, portfolio_growth_percentag
     return fig, fig2
 
 
+def make_predictions_and_save_csv(model, tokenized_datasets, raw_datasets, input_data):
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    model.to(device)
+    trainer = Trainer(model=model)
+    predictions = trainer.predict(tokenized_datasets[input_data])
+    
+    # Apply softmax to convert logits to probabilities
+    probabilities = softmax(predictions.predictions, axis=1)
+
+    # Get the predicted class labels
+    predicted_labels = np.argmax(probabilities, axis=1)
+
+    print("Probabilities:\n", probabilities)
+    print("Predicted Labels:\n", predicted_labels)
+
+    result_df = pd.DataFrame({
+        'date': raw_datasets[input_data]['date'],
+        'text': raw_datasets[input_data]['text'],
+        'stock': raw_datasets[input_data]['stock'],
+        'Predicted_Labels': predicted_labels,
+        'Probability_Class_0': probabilities[:, 0],
+        'Probability_Class_1': probabilities[:, 1],  # 2 classes
+    })
+
+    output_csv_path = f"predictions_{input_data}.csv"
+    result_df.to_csv(output_csv_path, index=False)
+    print(f"Predictions have been saved to {output_csv_path}")
+
+def calculate_sentiment_summary(df, window_size = 60, threshold=1.5, margin=0.3, min_periods=5):
+    df['date'] = pd.to_datetime(df['date']).dt.date
+    sentiment_summary = df.groupby('date').agg(
+    daily_positive_sentiment=pd.NamedAgg(column='Probability_Class_1', aggfunc='sum'),
+    daily_negative_sentiment=pd.NamedAgg(column='Probability_Class_0', aggfunc='sum')
+).reset_index()
+
+    rolling_avg_pos = sentiment_summary['daily_positive_sentiment'].rolling(window=window_size, min_periods=min_periods).mean()
+    rolling_std_pos = sentiment_summary['daily_positive_sentiment'].rolling(window=window_size, min_periods=min_periods).std()
+    
+    rolling_avg_neg = sentiment_summary['daily_negative_sentiment'].rolling(window=window_size, min_periods=min_periods).mean()
+    rolling_std_neg = sentiment_summary['daily_negative_sentiment'].rolling(window=window_size, min_periods=min_periods).std()
+
+    sentiment_summary['z_score_positive'] = (sentiment_summary['daily_positive_sentiment'] - rolling_avg_pos) / rolling_std_pos
+    sentiment_summary['z_score_negative'] = (sentiment_summary['daily_negative_sentiment'] - rolling_avg_neg) / rolling_std_neg
+
+    sentiment_summary['unusual_positive_sentiment'] = sentiment_summary['z_score_positive'].apply(lambda x: x > threshold)
+    sentiment_summary['unusual_negative_sentiment'] = sentiment_summary['z_score_negative'].apply(lambda x: x > threshold)
+
+    sentiment_summary['relative_daily_positive_sentiment'] = sentiment_summary['daily_positive_sentiment']/rolling_avg_pos
+    sentiment_summary['relative_daily_negative_sentiment'] = sentiment_summary['daily_negative_sentiment']/rolling_avg_neg
+
+    sentiment_summary['net_sentiment'] = sentiment_summary['daily_positive_sentiment'] - sentiment_summary['daily_negative_sentiment']
+    sentiment_summary['dominant_sentiment'] = 0
+    for index, row in sentiment_summary.iterrows():
+        pos_z = abs(row['z_score_positive'])
+        neg_z = abs(row['z_score_negative'])
+
+        if row['unusual_positive_sentiment'] and row['unusual_negative_sentiment']:
+            if abs(pos_z - neg_z) <= margin:  
+                sentiment_summary.loc[index, 'dominant_sentiment'] = 0
+            elif pos_z > neg_z:
+                sentiment_summary.loc[index, 'dominant_sentiment'] = 1
+            else:
+                sentiment_summary.loc[index, 'dominant_sentiment'] = -1
+        elif row['unusual_positive_sentiment']:
+            sentiment_summary.loc[index, 'dominant_sentiment'] = 1
+        elif row['unusual_negative_sentiment']:
+            sentiment_summary.loc[index, 'dominant_sentiment'] = -1
+
+    sentiment_summary = sentiment_summary.dropna().reset_index(drop=True)
+
+    return sentiment_summary
+
+def plot_stock_sentiment(df_stock):
+    fig, ax1 = plt.subplots(figsize=(21, 7))
+
+    ax1.plot(df_stock['Date'], df_stock['Close'], label='Close Price', color='black')
+
+    # Normalize the z-scores between 0 and 1 to use for alpha scaling
+    max_z_score = max(df_stock['z_score_positive'].max(), df_stock['z_score_negative'].max(), key=abs)
+    min_z_score = min(df_stock['z_score_positive'].min(), df_stock['z_score_negative'].min(), key=abs)
+    z_scores_scaled = (df_stock[['z_score_positive', 'z_score_negative']] - min_z_score) / (max_z_score - min_z_score)
+
+    for index, row in df_stock.iterrows():
+        if row['dominant_sentiment'] == 1:
+            alpha_value = z_scores_scaled.loc[index, 'z_score_positive']
+            ax1.axvline(x=row['Date'], color='green', alpha=alpha_value, lw=2)
+        elif row['dominant_sentiment'] == -1:
+            alpha_value = z_scores_scaled.loc[index, 'z_score_negative']
+            ax1.axvline(x=row['Date'], color='red', alpha=alpha_value, lw=2)
+
+    ax1.xaxis.set_major_locator(mdates.MonthLocator())
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+    plt.xticks(rotation=45)
+
+    ax1.set_xlabel('Date')
+    ax1.set_ylabel('Close Price')
+    ax1.set_title('Stock Price and Dominant Sentiment')
+    ax1.legend(['Close Price'], loc='best') 
+    ax1.grid(True)
+    plt.show()
+
+
+

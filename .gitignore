@@ -28,3 +28,4 @@ Unlabelled_Data/data/*
 
 Unlabelled_Data/__pycache__/*
 *.safetensors
+*.arrow
