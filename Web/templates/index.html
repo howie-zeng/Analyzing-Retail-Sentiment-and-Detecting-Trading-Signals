@@ -3,24 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <title>Stock Data Visualization</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css"/>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica', sans-serif;
+            background-color: #fff;
+            color: #101010;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        form {
+            background-color: #FAFAFA;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center; 
+        }
+        input[type=submit] {
+            background-color: #B31B1B; 
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block; 
+            margin: 0 auto; 
+        }
+        input[type=submit]:hover {
+            background-color: #9B0C0C; 
+        }
+        #plot {
+            width: 100%;
+        }
+        .datalist-input {
+            border: 1px solid #ddd;
+            padding: 8px;
+            border-radius: 5px;
+            width: calc(100% - 16px);
+        }
+        .image-container {
+            text-align: center; 
+            margin-top: 20px;
+        }
+        .image-container img {
+            max-width: 100%; 
+            height: auto;
+        }
+    </style>
 </head>
 <body>
-    <form id="stockForm">
-        <label for="stock_symbol">Select stock:</label>
-        <select name="stock_symbol" id="stock_symbol">
-            {% for symbol in stock_symbols %}
-                <option value="{{ symbol }}">{{ symbol }}</option>
-            {% endfor %}
-        </select>
-        <label for="start_date">Start Date:</label>
-        <input type="date" id="start_date" name="start_date" value="2019-01-01">
-        <label for="end_date">End Date:</label>
-        <input type="date" id="end_date" name="end_date" value="2023-11-10">
-        <input type="submit" value="Get Data">
-    </form>
-
-    <div id="plot"></div>
+    <div class="container">
+        <div class="image-container">
+            <img id="Logo" src="https://upload.wikimedia.org/wikipedia/en/f/f0/WallStreetBets.png" alt="Logo" />
+        </div>
+        <form id="stockForm">
+            <div class="datalist-container">
+                <label for="stock_symbol">Select stock:</label>
+                <input class="datalist-input" list="stock_symbols" id="stock_symbol" name="stock_symbol" placeholder="Type to search...", value="TSLA"/>
+                <datalist id="stock_symbols">
+                    <option value="RIVN">Rivian.</option>
+                    <option value="BB">BlackBerry.</option>
+                    <option value="SOFI">SoFi Technologies.</option>
+                    <option value="GME">GameStop.</option>
+                    <option value="AMC">AMC Entertainment.</option>
+                    <option value="PLTR">Palantir Technologies.</option>
+                    <option value="TSLA">Tesla.</option>
+                    <option value="AAPL">Apple.</option>
+                    <option value="MSFT">Microsoft.</option>
+                    <option value="AMZN">Amazon.</option>
+                    <option value="GOOG">Google.</option>
+                    <option value="AMD">Advanced Micro Devices.</option>
+                    <option value="NVDA">NVIDIA.</option>
+                </datalist>
+                <div class="three columns">
+                    <label for="start_date">Start Date:</label>
+                    <input type="date" id="start_date" name="start_date" value="2020-01-01">
+                </div>
+                <div class="three columns">
+                    <label for="end_date">End Date:</label>
+                    <input type="date" id="end_date" name="end_date" value="2023-11-10">
+                </div>
+                <div class="row radio-group">
+                    <label><input type="radio" name="plot_type" value="candlestick" checked>Candlestick Plot</label>
+                    <label><input type="radio" name="plot_type" value="line">Line Plot</label>
+                </div>
+            </div>
+            <input class="submit" type="submit" value="Get Data">
+        </form>
+        <div id="plot"></div>
+    </div>
 
     <script>
         document.getElementById('stockForm').onsubmit = function(event){
@@ -31,7 +107,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                Plotly.newPlot('plot', JSON.parse(data.plot).data);
+                Plotly.newPlot('plot', JSON.parse(data.plot).data, JSON.parse(data.plot).layout);
             });
         };
     </script>

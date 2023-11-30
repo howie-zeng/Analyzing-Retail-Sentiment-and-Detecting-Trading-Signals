@@ -817,34 +817,6 @@ def plot_signal_returns(buys, sells, portfolio_value, portfolio_growth_percentag
     return fig, fig2
 
 
-def make_predictions_and_save_csv(model, tokenized_datasets, raw_datasets, input_data):
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model.to(device)
-    trainer = Trainer(model=model)
-    predictions = trainer.predict(tokenized_datasets[input_data])
-    
-    # Apply softmax to convert logits to probabilities
-    probabilities = softmax(predictions.predictions, axis=1)
-
-    # Get the predicted class labels
-    predicted_labels = np.argmax(probabilities, axis=1)
-
-    print("Probabilities:\n", probabilities)
-    print("Predicted Labels:\n", predicted_labels)
-
-    result_df = pd.DataFrame({
-        'date': raw_datasets[input_data]['date'],
-        'text': raw_datasets[input_data]['text'],
-        'stock': raw_datasets[input_data]['stock'],
-        'Predicted_Labels': predicted_labels,
-        'Probability_Class_0': probabilities[:, 0],
-        'Probability_Class_1': probabilities[:, 1],  # 2 classes
-    })
-
-    output_csv_path = f"predictions_{input_data}.csv"
-    result_df.to_csv(output_csv_path, index=False)
-    print(f"Predictions have been saved to {output_csv_path}")
-
 def calculate_sentiment_summary(df, window_size = 60, threshold=1.5, margin=0.3, min_periods=5):
     df['date'] = pd.to_datetime(df['date']).dt.date
     sentiment_summary = df.groupby('date').agg(
