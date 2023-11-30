@@ -9,9 +9,8 @@ import json
 
 app = Flask(__name__)
 
-# Assuming your CSV files have columns named 'Date', 'Open', 'High', 'Low', 'Close', 'Volume'
 def read_stock_data(symbol, start_date, end_date):
-    df = pd.read_csv(f'Web/data/{symbol}.csv')
+    df = pd.read_csv(f'data/{symbol}.csv')
     df['Date'] = pd.to_datetime(df['Date'])
     mask = (df['Date'] >= start_date) & (df['Date'] <= end_date)
     df['Date'] = df['Date'].dt.date 
@@ -156,7 +155,6 @@ def generate_line_plot(df):
 
 @app.route('/')
 def index():
-    # Assuming you have a list of stock symbols
     stock_symbols = ['RIVN', 'BB', 'SOFI', 'GME', 'AMC', 'PLTR', 'TSLA', 'AAPL', 'MSFT', 'AMZN', 'GOOG', 'AMD', 'NVDA']  # Add your own symbols
     return render_template('index.html', stock_symbols=stock_symbols)
 
@@ -165,8 +163,7 @@ def get_stock_data():
     stock_symbol = request.form['stock_symbol']
     start_date = request.form['start_date']
     end_date = request.form['end_date']
-    plot_type = request.form['plot_type']  # This will be either 'candlestick' or 'line'
-
+    plot_type = request.form['plot_type'] 
     df = read_stock_data(stock_symbol, start_date, end_date)
 
     if plot_type == 'candlestick':
