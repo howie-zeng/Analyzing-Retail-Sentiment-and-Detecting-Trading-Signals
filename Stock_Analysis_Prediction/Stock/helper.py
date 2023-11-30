@@ -913,7 +913,7 @@ def plot_stock_sentiment(df_stock):
 
     ax1.set_xlabel('Date')
     ax1.set_ylabel('Close Price')
-    ax1.set_title('Stock Price and Dominant Sentiment')
+    ax1.set_title('Stock Price and Sentiment')
     ax1.legend(['Close Price'], loc='best') 
     ax1.grid(True)
     plt.show()
