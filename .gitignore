@@ -1,5 +1,4 @@
 # Ignore specific file extensions
-*.csv
 *.pt
 *.bin
 *.exe
@@ -25,7 +24,10 @@ Stock_Analysis_Prediction/Social_Media/__pycache__/
 
 
 Unlabelled_Data/data/*
+Sentiment_Analysis/data/*
+Unlabeled_Data/data/*
 
 Unlabelled_Data/__pycache__/*
 *.safetensors
 *.arrow
+
