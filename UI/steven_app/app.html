@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Data Visualization</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Stock Data: TSLA</h1>
+        <div class="filters">
+            <label for="dateRange">Date Range:</label>
+            <input type="date" id="startDate">
+            <input type="date" id="endDate">
+            <label for="priceRange">Price Range:</label>
+            <input type="range" id="priceRange" min="0" max="1000" step="10">
+            <label for="showBuysSells">Show Buys/Sells:</label>
+            <input type="checkbox" id="showBuysSells">
+        </div>
+        <canvas id="stockGraph"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
