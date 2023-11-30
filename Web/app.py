@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # Assuming your CSV files have columns named 'Date', 'Open', 'High', 'Low', 'Close', 'Volume'
 def read_stock_data(symbol, start_date, end_date):
-    df = pd.read_csv(f'data/{symbol}.csv')
+    df = pd.read_csv(f'Web/data/{symbol}.csv')
     df['Date'] = pd.to_datetime(df['Date'])
     mask = (df['Date'] >= start_date) & (df['Date'] <= end_date)
     df['Date'] = df['Date'].dt.date 
