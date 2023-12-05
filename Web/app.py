@@ -10,7 +10,7 @@ import json
 app = Flask(__name__)
 
 def read_stock_data(symbol, start_date, end_date):
-    df = pd.read_csv(f'data/{symbol}.csv')
+    df = pd.read_csv(f'Web/data/{symbol}.csv')
     df['Date'] = pd.to_datetime(df['Date'])
     mask = (df['Date'] >= start_date) & (df['Date'] <= end_date)
     df['Date'] = df['Date'].dt.date 
@@ -155,7 +155,7 @@ def generate_line_plot(df):
 
 @app.route('/')
 def index():
-    stock_symbols = ['RIVN', 'BB', 'SOFI', 'GME', 'AMC', 'PLTR', 'TSLA', 'AAPL', 'MSFT', 'AMZN', 'GOOG', 'AMD', 'NVDA']  # Add your own symbols
+    stock_symbols = ['RIVN', 'BB', 'SOFI', 'GME', 'AMC', 'PLTR', 'TSLA', 'AAPL', 'MSFT', 'AMZN', 'GOOG', 'AMD', 'NVDA']  
     return render_template('index.html', stock_symbols=stock_symbols)
 
 @app.route('/get_stock_data', methods=['POST'])
