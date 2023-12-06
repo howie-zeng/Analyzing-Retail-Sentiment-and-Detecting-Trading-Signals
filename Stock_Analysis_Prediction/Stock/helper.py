@@ -705,8 +705,11 @@ def prepare_data(stock_data, stock, fromDate, toDate, lag, stationary=False):
     for i in range(1, 5):  # range - 1 lag days
         df[f'close_lag_{i}'] = df[y_name].shift(i)    
         # for item in ['SPY']:
-        #     df[f'{item}_close_lag_{i}'] = df[f'{y_name}_SPY'].shift(i)      
-        df[f'volume_lag_{i}'] = df['Volume'].shift(i)
+        #     df[f'{item}_close_lag_{i}'] = df[f'{y_name}_SPY'].shift(i)    
+        if stationary:
+            df[f'volume_lag_{i}'] = df['Volume_MA_diff'].shift(i)
+        else:
+            df[f'volume_lag_{i}'] = df['Volume'].shift(i)
     df.dropna(inplace=True)
 
     
