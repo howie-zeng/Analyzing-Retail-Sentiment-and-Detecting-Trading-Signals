@@ -1,3 +1,7 @@
+
+[Current report - 12/26/2023](https://github.com/howie-zeng/Analyzing-the-Correlation-Between-Retail-Traders--Sentiments-and-Equity-Market-Movements/blob/main/Reports/Final_Report.pdf)
+
+
 ## Updates/Log
 - [10/02/2023](#date-10022023)
 - [10/20/2023](#date-10202023)
