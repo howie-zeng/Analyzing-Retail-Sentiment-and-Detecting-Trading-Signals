@@ -1,5 +1,6 @@
-
-[Current report - 12/26/2023](https://github.com/howie-zeng/Analyzing-the-Correlation-Between-Retail-Traders--Sentiments-and-Equity-Market-Movements/blob/main/Reports/Final_Report.pdf)
+## Link
+ -[Current report - 12/26/2023](https://github.com/howie-zeng/Analyzing-the-Correlation-Between-Retail-Traders--Sentiments-and-Equity-Market-Movements/blob/main/Reports/Final_Report.pdf)
+- [Signal Prediction](https://github.com/howie-zeng/Analyzing-the-Correlation-Between-Retail-Traders--Sentiments-and-Equity-Market-Movements/blob/main/Stock_Analysis_Prediction/Stock/Signal_Detection.ipynb)
 
 
 ## Updates/Log
